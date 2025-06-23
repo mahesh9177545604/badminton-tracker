@@ -1,8 +1,8 @@
 const teams = [
-  { name: 'Red Raptors', points: 2 },
-  { name: 'Blue Blasters', points: 1 },
-  { name: 'Green Smashers', points: 2 },
-  { name: 'Yellow Flyers', points: 1 }
+  { name: 'Red Raptors', points: 2, color: '#e74c3c', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/1/10/Toronto_Raptors_logo.svg/1200px-Toronto_Raptors_logo.svg.png' },
+  { name: 'Blue Blasters', points: 1, color: '#3498db', logo: 'https://cdn-icons-png.flaticon.com/512/3132/3132693.png' },
+  { name: 'Green Smashers', points: 2, color: '#2ecc71', logo: 'https://cdn-icons-png.flaticon.com/512/3176/3176292.png' },
+  { name: 'Yellow Flyers', points: 1, color: '#f1c40f', logo: 'https://cdn-icons-png.flaticon.com/512/3132/3132678.png' }
 ];
 
 const fixtures = [
@@ -55,10 +55,14 @@ function renderAnalytics() {
     const maxPoints = Math.max(...teams.map(t => t.points));
     const topTeams = teams.filter(t => t.points === maxPoints);
     const highlight = document.createElement('div');
+    const logos = topTeams.map(t => `<img src="${t.logo}" alt="${t.name}" width="40" height="40" style="vertical-align:middle; margin-right:8px; border-radius:50%; border:2px solid ${t.color};">`).join('');
     highlight.innerHTML = `
-      <div style="margin-top: 24px; padding: 16px; background: #dff0d8; border-left: 5px solid #27ae60; border-radius: 8px;">
-        🏆 <strong>Top Team${topTeams.length > 1 ? 's' : ''}:</strong> ${topTeams.map(t => t.name).join(', ')}<br>
-        <span style="color:#2c3e50;font-size:14px;">with <strong>${maxPoints}</strong> point${maxPoints !== 1 ? 's' : ''}</span>
+      <div style="margin-top: 24px; padding: 16px; background: #dff0d8; border-left: 5px solid #27ae60; border-radius: 8px; display: flex; align-items: center; gap: 12px;">
+        ${logos}
+        <div>
+          🏆 <strong>Top Team${topTeams.length > 1 ? 's' : ''}:</strong> ${topTeams.map(t => t.name).join(', ')}<br>
+          <span style="color:#2c3e50;font-size:14px;">with <strong>${maxPoints}</strong> point${maxPoints !== 1 ? 's' : ''}</span>
+        </div>
       </div>`;
     analyticsDiv.appendChild(highlight);
   }
