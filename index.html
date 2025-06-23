@@ -15,21 +15,35 @@
       text-align: center;
       color: #2c3e50;
     }
-    #fixture-section, #match-analytics {
+    section {
       max-width: 1000px;
-      margin: 30px auto;
+      margin: 0 auto 20px;
+    }
+    input, select {
+      padding: 6px;
+      margin: 5px;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px 16px;
+      border-radius: 6px;
+      background: #2ecc71;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
     }
     .fixture-card {
       background: #fff;
+      border: 1px solid #ccc;
       border-radius: 8px;
       padding: 12px;
       margin-bottom: 12px;
-      border: 1px solid #ccc;
     }
-    select {
-      margin-top: 8px;
-      padding: 6px;
-      border-radius: 6px;
+    .team-title {
+      font-weight: bold;
+      color: #2c3e50;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -37,13 +51,19 @@
 
   <h1>🏸 Badminton Tournament Tracker</h1>
 
+  <!-- Player entry section -->
+  <section id="team-entry">
+    <h2>Enter Players (8 per team)</h2>
+    <div id="team-inputs"></div>
+    <button onclick="generateFixturesFromPlayers()">Generate Fixtures</button>
+  </section>
+
   <!-- Fixtures -->
-  <div id="fixture-section"></div>
+  <section id="fixture-section"></section>
 
   <!-- Analytics -->
-  <div id="match-analytics"></div>
+  <section id="match-analytics"></section>
 
-  <!-- JS Logic -->
   <script src="script.js"></script>
 </body>
 </html>
