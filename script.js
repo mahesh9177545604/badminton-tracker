@@ -1,7 +1,23 @@
-// Match analytics panel (Polished)
+const teams = [
+  { name: 'Red Raptors', points: 2 },
+  { name: 'Blue Blasters', points: 1 },
+  { name: 'Green Smashers', points: 2 },
+  { name: 'Yellow Flyers', points: 1 }
+];
+
+const fixtures = [
+  { id: 1, teams: ['Red Raptors', 'Blue Blasters'], winner: 'Red Raptors' },
+  { id: 2, teams: ['Green Smashers', 'Yellow Flyers'], winner: 'Yellow Flyers' },
+  { id: 3, teams: ['Red Raptors', 'Green Smashers'], winner: 'Green Smashers' },
+  { id: 4, teams: ['Blue Blasters', 'Yellow Flyers'], winner: 'Blue Blasters' },
+  { id: 5, teams: ['Red Raptors', 'Yellow Flyers'], winner: 'Red Raptors' },
+  { id: 6, teams: ['Blue Blasters', 'Green Smashers'], winner: 'Green Smashers' }
+];
+
 function renderAnalytics() {
-  const analyticsDiv = document.createElement('div');
+  const analyticsDiv = document.getElementById('match-analytics') || document.createElement('div');
   analyticsDiv.id = 'match-analytics';
+  analyticsDiv.innerHTML = '';
   analyticsDiv.style.margin = '40px auto';
   analyticsDiv.style.padding = '24px';
   analyticsDiv.style.maxWidth = '1000px';
@@ -47,5 +63,22 @@ function renderAnalytics() {
     analyticsDiv.appendChild(highlight);
   }
 
-  document.body.appendChild(analyticsDiv);
+  if (!document.getElementById('match-analytics')) {
+    document.body.appendChild(analyticsDiv);
+  }
 }
+
+function updateWinner(matchId, winnerName) {
+  const match = fixtures.find(m => m.id === matchId);
+  if (!match || match.winner === winnerName) return;
+  if (match.winner) {
+    const prevTeam = teams.find(t => t.name === match.winner);
+    if (prevTeam) prevTeam.points--;
+  }
+  match.winner = winnerName;
+  const newTeam = teams.find(t => t.name === winnerName);
+  if (newTeam) newTeam.points++;
+  renderAnalytics();
+}
+
+renderAnalytics();
