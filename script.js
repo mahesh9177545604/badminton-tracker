@@ -90,6 +90,56 @@ function renderTeams() {
 
     teamDiv.appendChild(teamHTML);
   });
+
+  // Add Generate Fixtures Button
+  const button = document.createElement('button');
+  button.innerText = "Generate Fixtures";
+  button.style.margin = "20px 0";
+  button.style.padding = "12px 24px";
+  button.style.fontSize = "16px";
+  button.style.backgroundColor = "#2ecc71";
+  button.style.color = "#fff";
+  button.style.border = "none";
+  button.style.borderRadius = "8px";
+  button.style.cursor = "pointer";
+
+  button.onclick = () => {
+    generateFixtures();
+  };
+
+  teamDiv.appendChild(button);
+}
+
+function generateFixtures() {
+  const fixtureDiv = document.getElementById('fixtures');
+  fixtureDiv.innerHTML = '<h2 style="color:#2c3e50;">📅 Fixtures</h2>';
+
+  const combinations = [];
+
+  for (let i = 0; i < teams.length; i++) {
+    for (let j = i + 1; j < teams.length; j++) {
+      const teamA = teams[i];
+      const teamB = teams[j];
+
+      for (let pA = 0; pA < pairsPerTeam; pA++) {
+        const pairA = teamA.pairs[pA] || `Pair ${pA + 1}`;
+        const pairB = teamB.pairs[pA % pairsPerTeam] || `Pair ${pA + 1}`;
+        combinations.push(`${teamA.name} (${pairA}) 🆚 ${teamB.name} (${pairB})`);
+      }
+    }
+  }
+
+  const ul = document.createElement('ul');
+  ul.style.paddingLeft = '20px';
+
+  combinations.forEach(match => {
+    const li = document.createElement('li');
+    li.innerText = match;
+    li.style.margin = '8px 0';
+    ul.appendChild(li);
+  });
+
+  fixtureDiv.appendChild(ul);
 }
 
 window.onload = renderTeams;
