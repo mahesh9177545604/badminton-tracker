@@ -21,15 +21,13 @@ function generateFixtures() {
 // ===== FIXTURE RENDERING =====
 function renderFixtures() {
   const section = document.getElementById('fixture-section');
+  if (!section) return;
+
   section.innerHTML = '<h2>🏸 Fixtures</h2>';
 
   fixtures.forEach(match => {
     const div = document.createElement('div');
-    div.style.margin = '10px 0';
-    div.style.padding = '10px';
-    div.style.border = '1px solid #ccc';
-    div.style.borderRadius = '8px';
-    div.style.background = '#fff';
+    div.className = 'fixture-card';
 
     const [teamA, teamB] = match.teams;
 
@@ -52,12 +50,12 @@ function renderFixtures() {
 
 // ===== ANALYTICS RENDERING =====
 function renderAnalytics() {
-  const analyticsDiv = document.getElementById('match-analytics') || document.createElement('div');
-  analyticsDiv.id = 'match-analytics';
+  const analyticsDiv = document.getElementById('match-analytics');
+  if (!analyticsDiv) return;
+
   analyticsDiv.innerHTML = '';
   analyticsDiv.style.margin = '40px auto';
   analyticsDiv.style.padding = '24px';
-  analyticsDiv.style.maxWidth = '1000px';
   analyticsDiv.style.background = 'linear-gradient(to right, #fdfbfb, #ebedee)';
   analyticsDiv.style.border = '1px solid #d1d1d1';
   analyticsDiv.style.borderRadius = '12px';
@@ -102,10 +100,6 @@ function renderAnalytics() {
         </div>
       </div>`;
     analyticsDiv.appendChild(highlight);
-  }
-
-  if (!document.getElementById('match-analytics')) {
-    document.body.appendChild(analyticsDiv);
   }
 }
 
