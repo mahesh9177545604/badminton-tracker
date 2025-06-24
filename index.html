@@ -2,67 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Badminton Tournament Tracker</title>
+  <title>Smash Clash Badminton League</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-    }
-    section {
-      max-width: 1000px;
-      margin: 0 auto 20px;
-    }
-    input, select {
-      padding: 6px;
-      margin: 5px;
-      border-radius: 6px;
-    }
-    button {
-      padding: 10px 16px;
-      border-radius: 6px;
-      background: #2ecc71;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .fixture-card {
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-    .team-title {
-      font-weight: bold;
-      color: #2c3e50;
-      margin-top: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css" />
+
 </head>
 <body>
 
-  <h1>🏸 Badminton Tournament Tracker</h1>
+  <img class="banner" src="https://static.vecteezy.com/system/resources/previews/008/535/026/large_2x/badminton-racket-and-shuttlecock-on-court-sports-background-free-photo.jpg" alt="Badminton Banner" />
+  <h1>🏸 Smash Clash Badminton League 2024</h1>
 
-  <!-- Player entry section -->
-  <section id="team-entry">
-    <h2>Enter Players (8 per team)</h2>
+  <div class="container">
     <div id="team-inputs"></div>
-    <button onclick="generateFixturesFromPlayers()">Generate Fixtures</button>
-  </section>
+    <button onclick="collectPairsAndGenerate()">Generate Fixtures</button>
 
-  <!-- Fixtures -->
-  <section id="fixture-section"></section>
+    <h2>Fixtures</h2>
+    <div id="fixtures"></div>
 
-  <!-- Analytics -->
-  <section id="match-analytics"></section>
+    <h2>Team Points</h2>
+    <div id="team-points"></div>
+
+    <h2>Player Stats</h2>
+    <div id="player-stats"></div>
+  </div>
 
   <script src="script.js"></script>
 </body>
