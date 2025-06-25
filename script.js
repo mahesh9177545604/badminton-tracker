@@ -1,203 +1,253 @@
-const teams = [];
-const fixtures = [];
-const playerStats = {};
+const teams = ['Red Raptors', 'Green Smashers', 'Blue Blasters', 'Yellow Flyers', 'Purple Hurricanes'];
+const teamColors = ['#e74c3c', '#2ecc71', '#3498db', '#f1c40f', '#9b59b6'];
 
-function addTeam(name, color, logo, pairs) {
-  teams.push({ name, points: 0, color, logo, pairs });
-  pairs.flat().forEach(player => {
-    playerStats[player] = { wins: 0, losses: 0 };
-  });
-}
+let playerStatsDoubles = {};
+let playerStatsSingles = {};
+let teamStatsDoubles = {};
+let teamStatsSingles = {};
+let doublesMatches = [];
+let singlesMatches = [];
+let darkMode = false;
 
-function collectPairsAndGenerate() {
-  teams.length = 0;
-  fixtures.length = 0;
-  Object.keys(playerStats).forEach(k => delete playerStats[k]);
+document.addEventListener('DOMContentLoaded', () => {
+  initCaptains();
+  populateTeamDropdowns();
+  setupTabs();
+  setupForms();
+  setupButtons();
+});
 
-  const teamDivs = document.querySelectorAll(".team-block");
-  teamDivs.forEach((block, i) => {
-    const inputs = block.querySelectorAll("input");
-    const pairs = [];
-    for (let j = 0; j < inputs.length; j += 2) {
-      const p1 = inputs[j].value.trim();
-      const p2 = inputs[j + 1].value.trim();
-      if (p1 && p2) pairs.push([p1, p2]);
-    }
-    if (pairs.length === 4) {
-      addTeam(teamsMeta[i].name, teamsMeta[i].color, teamsMeta[i].logo, pairs);
-    }
-  });
-
-  if (teams.length === 4) generateFixtures();
-  else alert("Please enter all 4 pairs for each team.");
-}
-
-function generateFixtures() {
-  fixtures.length = 0;
-  let id = 1;
-  for (let i = 0; i < teams.length; i++) {
-    for (let j = 0; j < teams.length; j++) {
-      if (i === j) continue;
-      teams[i].pairs.forEach(pairA => {
-        const pairB = teams[j].pairs[Math.floor(Math.random() * 4)];
-        fixtures.push({
-          id: id++,
-          teamA: teams[i].name,
-          teamB: teams[j].name,
-          pairA,
-          pairB,
-          winner: ''
-        });
-      });
-    }
-  }
-
-  renderFixtures();
-  renderAnalytics();
-  renderStats();
-  renderPoints();
-}
-
-function renderFixtures() {
-  const section = document.getElementById('fixtures');
-  section.innerHTML = '';
-  fixtures.forEach(match => {
-    const div = document.createElement('div');
-    div.className = 'fixture-card';
-    const label = document.createElement('label');
-    label.innerHTML = `<strong>Match ${match.id}</strong>: ${match.pairA.join(' & ')} (${match.teamA}) vs ${match.pairB.join(' & ')} (${match.teamB})`;
-
-    const select = document.createElement('select');
-    select.innerHTML = `
-      <option value="">Select Winner</option>
-      <option value="${match.teamA}">${match.teamA}</option>
-      <option value="${match.teamB}">${match.teamB}</option>`;
-    select.value = match.winner;
-    select.onchange = () => updateWinner(match, select.value);
-
-    div.appendChild(label);
-    div.appendChild(document.createElement('br'));
-    div.appendChild(select);
-    section.appendChild(div);
-  });
-}
-
-function renderPoints() {
-  const container = document.getElementById('team-points');
-  container.innerHTML = '<table><tr><th>Team</th><th>Points</th></tr>' +
-    teams.map(t => `<tr><td>${t.name}</td><td>${t.points}</td></tr>`).join('') +
-    '</table>';
-}
-
-function renderStats() {
-  const container = document.getElementById('player-stats');
-  container.innerHTML = '<table><tr><th>Player</th><th>Wins</th><th>Losses</th></tr>' +
-    Object.entries(playerStats).map(([p, s]) =>
-      `<tr><td>${p}</td><td>${s.wins}</td><td>${s.losses}</td></tr>`
-    ).join('') + '</table>';
-}
-
-function renderAnalytics() {
-  const played = fixtures.filter(f => f.winner).length;
-  const total = fixtures.length;
-  const topScore = Math.max(...teams.map(t => t.points));
-  const topTeams = teams.filter(t => t.points === topScore);
-  const msg = `Played: ${played}/${total}. Top Team${topTeams.length > 1 ? 's' : ''}: ${topTeams.map(t => t.name).join(', ')}`;
-  document.getElementById('analytics')?.remove();
-  const msgDiv = document.createElement('div');
-  msgDiv.id = 'analytics';
-  msgDiv.style.margin = "20px 0";
-  msgDiv.innerHTML = `<strong>${msg}</strong>`;
-  document.body.appendChild(msgDiv);
-}
-
-function updateWinner(match, winnerName) {
-  if (match.winner === winnerName) return;
-
-  if (match.winner) {
-    const prevTeam = teams.find(t => t.name === match.winner);
-    if (prevTeam) prevTeam.points--;
-
-    match.pairA.concat(match.pairB).forEach(player => {
-      if (playerStats[player]) {
-        if (match.winner === match.teamA) playerStats[player].wins--;
-        else playerStats[player].losses--;
-      }
-    });
-  }
-
-  match.winner = winnerName;
-
-  const team = teams.find(t => t.name === winnerName);
-  if (team) team.points++;
-
-  match.pairA.concat(match.pairB).forEach(player => {
-    if (playerStats[player]) {
-      const isWinnerA = (winnerName === match.teamA);
-      const isFromA = match.pairA.includes(player);
-      if ((isWinnerA && isFromA) || (!isWinnerA && !isFromA)) {
-        playerStats[player].wins++;
-      } else {
-        playerStats[player].losses++;
-      }
-    }
-  });
-
-  renderPoints();
-  renderStats();
-  renderAnalytics();
-}
-
-const teamsMeta = [
-  {
-    name: "Red Raptors",
-    color: "#e74c3c",
-    logo: "https://cdn-icons-png.flaticon.com/512/2490/2490348.png"
-  },
-  {
-    name: "Blue Blasters",
-    color: "#3498db",
-    logo: "https://cdn-icons-png.flaticon.com/512/3132/3132693.png"
-  },
-  {
-    name: "Green Smashers",
-    color: "#2ecc71",
-    logo: "https://cdn-icons-png.flaticon.com/512/3176/3176292.png"
-  },
-  {
-    name: "Yellow Flyers",
-    color: "#f1c40f",
-    logo: "https://cdn-icons-png.flaticon.com/512/3132/3132678.png"
-  }
-];
-
-function renderPlayerInputs() {
-  const container = document.getElementById("team-inputs");
+function initCaptains() {
+  const container = document.getElementById('captainDetails');
   container.innerHTML = '';
-  teamsMeta.forEach((team, i) => {
+  teams.forEach((team, idx) => {
     const div = document.createElement('div');
-    div.className = 'team-block';
-    div.style.borderLeftColor = team.color;
-
-    const header = document.createElement('div');
-    header.className = 'team-header';
-    header.innerHTML = `<img class="team-logo" src="${team.logo}" /><strong>${team.name}</strong>`;
-    div.appendChild(header);
-
-    for (let j = 0; j < 4; j++) {
-      const pair = document.createElement('div');
-      pair.className = 'pair';
-      pair.innerHTML = `
-        <input type="text" placeholder="Player 1" />
-        <input type="text" placeholder="Player 2" />
-      `;
-      div.appendChild(pair);
-    }
-
+    div.innerHTML = `
+      <label style="color: ${teamColors[idx]}; font-weight: bold;">${team} Captain:</label>
+      <input type="text" placeholder="Captain Name" id="captain-${team.replace(/\s+/g, '')}" />
+    `;
     container.appendChild(div);
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderPlayerInputs();
-});
+function populateTeamDropdowns() {
+  ['teamA', 'teamB', 'winnerDoubles', 'teamSingleA', 'teamSingleB', 'winnerSingles'].forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    select.innerHTML = '<option disabled selected>Select Team</option>';
+    teams.forEach(team => {
+      const option = document.createElement('option');
+      option.value = team;
+      option.textContent = team;
+      select.appendChild(option);
+    });
+  });
+}
+
+function setupTabs() {
+  const tabButtons = document.querySelectorAll('.tab-button');
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      button.classList.add('active');
+      document.getElementById(button.dataset.tab).classList.add('active');
+    });
+  });
+}
+
+function setupForms() {
+  document.getElementById('doublesForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const match = {
+      teamA: getVal('teamA'),
+      teamB: getVal('teamB'),
+      playerA1: getVal('playerA1'),
+      playerA2: getVal('playerA2'),
+      playerB1: getVal('playerB1'),
+      playerB2: getVal('playerB2'),
+      trumpA: document.getElementById('trumpA').checked,
+      trumpB: document.getElementById('trumpB').checked,
+      winner: getVal('winnerDoubles')
+    };
+
+    if (!match.teamA || !match.teamB || !match.winner || !match.playerA1 || !match.playerA2 || !match.playerB1 || !match.playerB2) {
+      alert("Please fill out all fields for doubles match.");
+      return;
+    }
+
+    if (isDuplicateMatch(match, 'doubles')) {
+      alert("This doubles match already exists.");
+      return;
+    }
+
+    doublesMatches.push(match);
+    updateStats(match, 'doubles');
+  });
+
+  document.getElementById('singlesForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const match = {
+      teamA: getVal('teamSingleA'),
+      teamB: getVal('teamSingleB'),
+      playerA: getVal('playerSingleA'),
+      playerB: getVal('playerSingleB'),
+      trumpA: document.getElementById('trumpSingleA').checked,
+      trumpB: document.getElementById('trumpSingleB').checked,
+      winner: getVal('winnerSingles')
+    };
+
+    if (!match.teamA || !match.teamB || !match.winner || !match.playerA || !match.playerB) {
+      alert("Please fill out all fields for singles match.");
+      return;
+    }
+
+    if (isDuplicateMatch(match, 'singles')) {
+      alert("This singles match already exists.");
+      return;
+    }
+
+    singlesMatches.push(match);
+    updateStats(match, 'singles');
+  });
+}
+
+function getVal(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function isDuplicateMatch(match, type) {
+  const key = type === 'doubles'
+    ? `${match.playerA1}-${match.playerA2}-${match.playerB1}-${match.playerB2}`
+    : `${match.playerA}-${match.playerB}`;
+  const existing = (type === 'doubles' ? doublesMatches : singlesMatches).some(m => {
+    return JSON.stringify(m).includes(key);
+  });
+  return existing;
+}
+
+function updateStats(match, type) {
+  const isDoubles = type === 'doubles';
+  const playersA = isDoubles ? [match.playerA1, match.playerA2] : [match.playerA];
+  const playersB = isDoubles ? [match.playerB1, match.playerB2] : [match.playerB];
+
+  const teamA = match.teamA;
+  const teamB = match.teamB;
+
+  const winnerTeam = match.winner;
+  const loserTeam = winnerTeam === teamA ? teamB : teamA;
+  const winnerPlayers = winnerTeam === teamA ? playersA : playersB;
+  const loserPlayers = winnerTeam === teamA ? playersB : playersA;
+  const winnerTrump = winnerTeam === teamA ? match.trumpA : match.trumpB;
+  const loserTrump = winnerTeam === teamA ? match.trumpB : match.trumpA;
+
+  let winnerPoints = 1;
+  let loserPoints = 0;
+
+  if (winnerTrump) winnerPoints = 2;
+  if (loserTrump) loserPoints = -1;
+
+  const playerStats = isDoubles ? playerStatsDoubles : playerStatsSingles;
+  const teamStats = isDoubles ? teamStatsDoubles : teamStatsSingles;
+
+  winnerPlayers.forEach(p => {
+    if (!playerStats[p]) playerStats[p] = { wins: 0, losses: 0, points: 0 };
+    playerStats[p].wins++;
+    playerStats[p].points += winnerPoints;
+  });
+
+  loserPlayers.forEach(p => {
+    if (!playerStats[p]) playerStats[p] = { wins: 0, losses: 0, points: 0 };
+    playerStats[p].losses++;
+    playerStats[p].points += loserPoints;
+  });
+
+  [teamA, teamB].forEach(team => {
+    if (!teamStats[team]) teamStats[team] = { wins: 0, losses: 0, points: 0 };
+  });
+
+  teamStats[winnerTeam].wins++;
+  teamStats[winnerTeam].points += winnerPoints;
+
+  teamStats[loserTeam].losses++;
+  teamStats[loserTeam].points += loserPoints;
+
+  renderStats();
+}
+
+function renderStats() {
+  const doublesPlayerContainer = document.getElementById('doublesStats');
+  const singlesPlayerContainer = document.getElementById('singlesStats');
+  const teamStatsContainer = document.getElementById('teamStats');
+
+  doublesPlayerContainer.innerHTML = renderPlayerTable(playerStatsDoubles, 'Doubles Player Stats');
+  singlesPlayerContainer.innerHTML = renderPlayerTable(playerStatsSingles, 'Singles Player Stats');
+
+  const teamHTML = `
+    <h3>Team Stats</h3>
+    <table>
+      <tr><th>Team</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
+      ${Object.entries(teamStatsDoubles).map(([team, stat]) => `
+        <tr><td>${team}</td><td>${stat.wins}</td><td>${stat.losses}</td><td>${stat.points}</td></tr>
+      `).join('')}
+      ${Object.entries(teamStatsSingles).map(([team, stat]) => `
+        <tr><td>${team}</td><td>${stat.wins}</td><td>${stat.losses}</td><td>${stat.points}</td></tr>
+      `).join('')}
+    </table>
+  `;
+  teamStatsContainer.innerHTML = teamHTML;
+}
+
+function renderPlayerTable(stats, title) {
+  return `
+    <h3>${title}</h3>
+    <table>
+      <tr><th>Player</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
+      ${Object.entries(stats).map(([player, s]) => `
+        <tr><td>${player}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>
+      `).join('')}
+    </table>
+  `;
+}
+
+function setupButtons() {
+  document.getElementById('toggleDarkMode').addEventListener('click', () => {
+    darkMode = !darkMode;
+    document.body.classList.toggle('dark-mode', darkMode);
+  });
+
+  document.getElementById('resetTournament').addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset the tournament?')) {
+      playerStatsDoubles = {};
+      playerStatsSingles = {};
+      teamStatsDoubles = {};
+      teamStatsSingles = {};
+      doublesMatches = [];
+      singlesMatches = [];
+      renderStats();
+    }
+  });
+
+  document.getElementById('exportExcel').addEventListener('click', () => {
+    const data = [['Player', 'Wins', 'Losses', 'Points']];
+    Object.entries(playerStatsDoubles).forEach(([name, s]) => {
+      data.push([name, s.wins, s.losses, s.points]);
+    });
+    Object.entries(playerStatsSingles).forEach(([name, s]) => {
+      data.push([name, s.wins, s.losses, s.points]);
+    });
+
+    const csv = data.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'player_stats.csv';
+    a.click();
+  });
+
+  document.getElementById('generateFixtures').addEventListener('click', () => {
+    alert('Fixtures logic is manual - enter match data using the form below.');
+  });
+}
