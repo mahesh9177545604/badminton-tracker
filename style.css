@@ -1,73 +1,87 @@
 body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
-  background: #f9f9f9;
+  padding: 0;
+  background: #f4f4f4;
   color: #333;
 }
 
-.header {
-  text-align: center;
+header {
   background: #fff;
-  padding: 10px;
-  border-bottom: 2px solid #ddd;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid #ccc;
 }
 
 .banner {
-  width: 100%;
-  max-height: 180px;
-  object-fit: cover;
+  height: 50px;
+  vertical-align: middle;
 }
 
 h1 {
-  margin: 0.5em 0;
+  font-size: 2rem;
+  margin: 10px 0;
 }
 
-.controls {
-  text-align: center;
-  padding: 1em;
-  background: #eee;
+.button-bar {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.controls button {
-  margin: 5px;
-  padding: 10px 16px;
+button {
+  padding: 8px 15px;
   border: none;
   background: #3498db;
   color: white;
-  font-weight: bold;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 14px;
 }
 
-.controls button:hover {
+button:hover {
   background: #2980b9;
 }
 
-.captains-section {
-  padding: 10px 20px;
-  background: #fff;
-  margin: 20px;
+.team-section {
+  background: white;
+  margin: 20px auto;
+  max-width: 800px;
+  padding: 15px;
   border-radius: 10px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.captains-section div {
-  margin: 10px 0;
+.team-section h4 {
+  margin-bottom: 10px;
+}
+
+input[type="text"], select {
+  padding: 5px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="checkbox"] {
+  margin: 0 5px;
 }
 
 .tabs {
   display: flex;
   justify-content: center;
-  margin: 1em 0;
+  margin: 20px 0;
+  gap: 10px;
 }
 
 .tab-button {
-  padding: 10px 20px;
-  margin: 0 5px;
-  background: #ddd;
+  padding: 8px 20px;
+  border-radius: 5px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  background: #eee;
+  font-weight: bold;
 }
 
 .tab-button.active {
@@ -77,128 +91,69 @@ h1 {
 
 .tab-content {
   display: none;
-  padding: 20px;
-  background: #fff;
-  margin: 10px 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.1);
 }
 
 .tab-content.active {
   display: block;
 }
 
+.fixture-header {
+  font-weight: bold;
+  background: #eee;
+  padding: 10px;
+  margin: 15px 0 5px;
+  border-radius: 5px;
+}
+
 .match-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.match-row {
-  display: flex;
-  gap: 30px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.match-row div {
-  flex: 1 1 250px;
-  min-width: 240px;
-}
-
-.winner-row {
-  margin-top: 10px;
-}
-
-.match-form input,
-.match-form select {
-  padding: 8px;
-  margin-top: 6px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
 .match-form label {
   font-weight: bold;
-  display: block;
+  margin-right: 5px;
 }
 
-.trump {
-  display: flex;
-  align-items: center;
-  font-weight: normal;
-  gap: 8px;
-  margin-top: 6px;
+.match-form select, .match-form input[type="text"] {
+  min-width: 100px;
 }
 
-.small-button {
-  padding: 8px 12px;
-  font-size: 14px;
-  background: #27ae60;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  width: fit-content;
-}
-
-.stats-section {
-  margin-top: 20px;
-  padding: 10px;
-  background: #fdfdfd;
-  border-top: 1px solid #ccc;
-}
-
-.stats-section table {
-  width: 100%;
-  border-collapse: collapse;
+.match-form button {
   margin-top: 10px;
 }
 
-.stats-section table th,
-.stats-section table td {
-  padding: 10px;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+table th, table td {
+  padding: 8px;
   border: 1px solid #ccc;
   text-align: center;
 }
 
-.stats-section h3 {
-  margin-top: 0;
-}
-
 .dark-mode {
-  background-color: #121212;
-  color: #e0e0e0;
+  background: #1e1e1e;
+  color: white;
 }
 
-.dark-mode .controls {
-  background-color: #1f1f1f;
+.dark-mode header {
+  background: #2c3e50;
+  border-bottom-color: #444;
 }
 
-.dark-mode .tab-content,
-.dark-mode .captains-section {
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-  border-color: #333;
+.dark-mode .team-section, .dark-mode .match-form {
+  background: #2e2e2e;
 }
 
-@media screen and (max-width: 600px) {
-  .controls, .tab-content, .captains-section {
-    margin: 10px;
-    padding: 10px;
-  }
-
-  .match-row {
-    flex-direction: column;
-  }
-
-  .match-form input, .match-form select {
-    max-width: 100%;
-  }
-
-  .tabs {
-    flex-direction: column;
-  }
+.dark-mode input, .dark-mode select, .dark-mode button {
+  background: #555;
+  color: white;
+  border: 1px solid #999;
 }
