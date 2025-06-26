@@ -1,253 +1,237 @@
-const teams = ['Red Raptors', 'Green Smashers', 'Blue Blasters', 'Yellow Flyers', 'Purple Hurricanes'];
-const teamColors = ['#e74c3c', '#2ecc71', '#3498db', '#f1c40f', '#9b59b6'];
+document.addEventListener("DOMContentLoaded", () => {
+  const teams = [
+    { name: "Red Raptors", color: "red", players: [], captain: "" },
+    { name: "Green Smashers", color: "green", players: [], captain: "" },
+    { name: "Blue Blasters", color: "blue", players: [], captain: "" },
+    { name: "Yellow Flyers", color: "gold", players: [], captain: "" },
+    { name: "Purple Hurricanes", color: "purple", players: [], captain: "" }
+  ];
 
-let playerStatsDoubles = {};
-let playerStatsSingles = {};
-let teamStatsDoubles = {};
-let teamStatsSingles = {};
-let doublesMatches = [];
-let singlesMatches = [];
-let darkMode = false;
+  const stats = {
+    doubles: [],
+    singles: [],
+    teamDoubles: {},
+    teamSingles: {}
+  };
 
-document.addEventListener('DOMContentLoaded', () => {
-  initCaptains();
-  populateTeamDropdowns();
-  setupTabs();
-  setupForms();
-  setupButtons();
-});
+  const submittedMatches = new Set();
 
-function initCaptains() {
-  const container = document.getElementById('captainDetails');
-  container.innerHTML = '';
-  teams.forEach((team, idx) => {
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <label style="color: ${teamColors[idx]}; font-weight: bold;">${team} Captain:</label>
-      <input type="text" placeholder="Captain Name" id="captain-${team.replace(/\s+/g, '')}" />
-    `;
-    container.appendChild(div);
-  });
-}
+  const captainDetailsDiv = document.getElementById("captainDetails");
+  const playerEntryDiv = document.getElementById("playerEntry");
 
-function populateTeamDropdowns() {
-  ['teamA', 'teamB', 'winnerDoubles', 'teamSingleA', 'teamSingleB', 'winnerSingles'].forEach(id => {
-    const select = document.getElementById(id);
-    if (!select) return;
-    select.innerHTML = '<option disabled selected>Select Team</option>';
+  function renderCaptains() {
+    captainDetailsDiv.innerHTML = "";
+    teams.forEach((team, index) => {
+      const div = document.createElement("div");
+      div.innerHTML = `<label style="color:${team.color}; font-weight:bold;">${team.name} Captain:</label>
+        <input type="text" data-team-index="${index}" class="captain-input" placeholder="Captain Name" />`;
+      captainDetailsDiv.appendChild(div);
+    });
+  }
+
+  function renderPlayerInputs() {
+    playerEntryDiv.innerHTML = "<h3>Enter 5 Players for Each Team</h3>";
+    teams.forEach((team, index) => {
+      const teamDiv = document.createElement("div");
+      teamDiv.innerHTML = `<h4 style="color:${team.color};">${team.name}</h4>`;
+      for (let i = 0; i < 5; i++) {
+        const input = document.createElement("input");
+        input.placeholder = `Player ${i + 1} Name`;
+        input.dataset.teamIndex = index;
+        input.classList.add("player-name-input");
+        teamDiv.appendChild(input);
+      }
+      playerEntryDiv.appendChild(teamDiv);
+    });
+  }
+
+  function collectTeamData() {
     teams.forEach(team => {
-      const option = document.createElement('option');
-      option.value = team;
-      option.textContent = team;
-      select.appendChild(option);
+      team.players = [];
     });
-  });
-}
-
-function setupTabs() {
-  const tabButtons = document.querySelectorAll('.tab-button');
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-      button.classList.add('active');
-      document.getElementById(button.dataset.tab).classList.add('active');
+    document.querySelectorAll(".captain-input").forEach(input => {
+      const index = input.dataset.teamIndex;
+      teams[index].captain = input.value.trim();
     });
-  });
-}
+    document.querySelectorAll(".player-name-input").forEach(input => {
+      const index = input.dataset.teamIndex;
+      if (!teams[index].players.includes(input.value.trim()) && input.value.trim()) {
+        teams[index].players.push(input.value.trim());
+      }
+    });
+  }
 
-function setupForms() {
-  document.getElementById('doublesForm').addEventListener('submit', e => {
+  function generateFixtures() {
+    collectTeamData();
+    const fixtures = [];
+    for (let i = 0; i < teams.length; i++) {
+      for (let j = i + 1; j < teams.length; j++) {
+        fixtures.push([teams[i].name, teams[j].name]);
+      }
+    }
+    renderMatchForms("doublesFixtures", fixtures, true);
+    renderMatchForms("singlesFixtures", fixtures, false);
+  }
+
+  function renderMatchForms(containerId, fixtures, isDoubles) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    fixtures.forEach(([teamA, teamB]) => {
+      const matchDiv = document.createElement("div");
+      matchDiv.className = "fixture-block";
+      matchDiv.innerHTML = `<div class="fixture-header">${teamA} vs ${teamB}</div>`;
+      const form = document.createElement("form");
+      form.classList.add("match-form");
+      form.dataset.fixture = `${teamA}_vs_${teamB}_${isDoubles ? "D" : "S"}`;
+
+      const count = isDoubles ? 3 : 2;
+      for (let i = 1; i <= count; i++) {
+        const section = document.createElement("div");
+        section.className = "fixture-line";
+
+        section.innerHTML = `
+          <label>Pair ${i}:</label>
+          <select required name="teamAPlayer1">${getPlayerOptions(teamA)}</select>
+          ${isDoubles ? `<select required name="teamAPlayer2">${getPlayerOptions(teamA)}</select>` : ""}
+          <label><input type="checkbox" name="teamATrump" /> Trump</label>
+          <select required name="teamBPlayer1">${getPlayerOptions(teamB)}</select>
+          ${isDoubles ? `<select required name="teamBPlayer2">${getPlayerOptions(teamB)}</select>` : ""}
+          <label><input type="checkbox" name="teamBTrump" /> Trump</label>
+          <select required name="winner">
+            <option value="">Select Winner</option>
+            <option value="${teamA}">${teamA}</option>
+            <option value="${teamB}">${teamB}</option>
+          </select>`;
+        form.appendChild(section);
+      }
+
+      const btn = document.createElement("button");
+      btn.type = "submit";
+      btn.className = "small-button";
+      btn.textContent = "Submit Match";
+      form.appendChild(btn);
+      form.addEventListener("submit", e => handleMatchSubmit(e, teamA, teamB, isDoubles));
+      matchDiv.appendChild(form);
+      container.appendChild(matchDiv);
+    });
+  }
+
+  function getPlayerOptions(teamName) {
+    const team = teams.find(t => t.name === teamName);
+    const all = [team.captain, ...team.players];
+    return all.map(p => `<option value="${p}">${p}</option>`).join("");
+  }
+
+  function handleMatchSubmit(e, teamA, teamB, isDoubles) {
     e.preventDefault();
-    const match = {
-      teamA: getVal('teamA'),
-      teamB: getVal('teamB'),
-      playerA1: getVal('playerA1'),
-      playerA2: getVal('playerA2'),
-      playerB1: getVal('playerB1'),
-      playerB2: getVal('playerB2'),
-      trumpA: document.getElementById('trumpA').checked,
-      trumpB: document.getElementById('trumpB').checked,
-      winner: getVal('winnerDoubles')
-    };
-
-    if (!match.teamA || !match.teamB || !match.winner || !match.playerA1 || !match.playerA2 || !match.playerB1 || !match.playerB2) {
-      alert("Please fill out all fields for doubles match.");
+    const form = e.target;
+    const fixtureId = form.dataset.fixture;
+    if (submittedMatches.has(fixtureId)) {
+      alert("Already submitted!");
       return;
     }
 
-    if (isDuplicateMatch(match, 'doubles')) {
-      alert("This doubles match already exists.");
-      return;
+    const selects = form.querySelectorAll("select");
+    const checkboxes = form.querySelectorAll("input[type=checkbox]");
+
+    const lines = form.querySelectorAll(".fixture-line");
+    for (const line of lines) {
+      const selectsInLine = line.querySelectorAll("select");
+      const checkboxesInLine = line.querySelectorAll("input[type=checkbox]");
+      const [a1, a2, b1, b2, winner] = isDoubles
+        ? [selectsInLine[0], selectsInLine[1], selectsInLine[2], selectsInLine[3], selectsInLine[4]]
+        : [selectsInLine[0], null, selectsInLine[1], null, selectsInLine[2]];
+
+      if (!a1.value || !b1.value || !winner.value || (isDoubles && (!a2.value || !b2.value))) {
+        alert("Please fill all fields before submitting.");
+        return;
+      }
+
+      const aTrump = checkboxesInLine[0].checked;
+      const bTrump = checkboxesInLine[1].checked;
+      const isTrumpWin = (aTrump && winner.value === teamA) || (bTrump && winner.value === teamB);
+      const isTrumpLoss = (aTrump && winner.value === teamB) || (bTrump && winner.value === teamA);
+      const point = isTrumpWin ? 2 : isTrumpLoss ? -1 : 1;
+
+      stats[isDoubles ? "doubles" : "singles"].push({
+        teamA, teamB, a1: a1.value, a2: a2?.value || '', b1: b1.value, b2: b2?.value || '', win: winner.value,
+        isTrump: isTrumpWin, isTrumpLost: isTrumpLoss, point
+      });
+
+      updateTeamStats(winner.value, isDoubles, point);
     }
 
-    doublesMatches.push(match);
-    updateStats(match, 'doubles');
-  });
+    submittedMatches.add(fixtureId);
+    renderStats();
+  }
 
-  document.getElementById('singlesForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const match = {
-      teamA: getVal('teamSingleA'),
-      teamB: getVal('teamSingleB'),
-      playerA: getVal('playerSingleA'),
-      playerB: getVal('playerSingleB'),
-      trumpA: document.getElementById('trumpSingleA').checked,
-      trumpB: document.getElementById('trumpSingleB').checked,
-      winner: getVal('winnerSingles')
-    };
+  function updateTeamStats(teamName, isDoubles, point) {
+    const key = isDoubles ? "teamDoubles" : "teamSingles";
+    if (!stats[key][teamName]) stats[key][teamName] = { wins: 0, losses: 0, points: 0 };
+    if (point > 0) stats[key][teamName].wins += 1;
+    if (point < 0) stats[key][teamName].losses += 1;
+    stats[key][teamName].points += point;
+  }
 
-    if (!match.teamA || !match.teamB || !match.winner || !match.playerA || !match.playerB) {
-      alert("Please fill out all fields for singles match.");
-      return;
-    }
+  function renderStats() {
+    document.getElementById("doublesStats").innerHTML =
+      "<h3>Doubles Stats</h3>" + buildMatchTable(stats.doubles, true);
+    document.getElementById("singlesStats").innerHTML =
+      "<h3>Singles Stats</h3>" + buildMatchTable(stats.singles, false);
+    document.getElementById("teamStatsDoubles").innerHTML =
+      "<h3>Team Doubles Stats</h3>" + buildTeamTable(stats.teamDoubles);
+    document.getElementById("teamStatsSingles").innerHTML =
+      "<h3>Team Singles Stats</h3>" + buildTeamTable(stats.teamSingles);
+  }
 
-    if (isDuplicateMatch(match, 'singles')) {
-      alert("This singles match already exists.");
-      return;
-    }
+  function buildMatchTable(data, isDoubles) {
+    const rows = data.map(d =>
+      `<tr>
+        <td>${d.teamA}</td>
+        <td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
+        <td>${d.teamB}</td>
+        <td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
+        <td>${d.win}</td>
+        <td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
+        <td>${d.point}</td>
+      </tr>`
+    ).join("");
+    return `<table><tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>${rows}</table>`;
+  }
 
-    singlesMatches.push(match);
-    updateStats(match, 'singles');
-  });
-}
+  function buildTeamTable(data) {
+    const rows = Object.entries(data).map(([team, val]) =>
+      `<tr><td>${team}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`
+    ).join("");
+    return `<table><tr><th>Team</th><th>Wins</th><th>Losses</th><th>Points</th></tr>${rows}</table>`;
+  }
 
-function getVal(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : '';
-}
-
-function isDuplicateMatch(match, type) {
-  const key = type === 'doubles'
-    ? `${match.playerA1}-${match.playerA2}-${match.playerB1}-${match.playerB2}`
-    : `${match.playerA}-${match.playerB}`;
-  const existing = (type === 'doubles' ? doublesMatches : singlesMatches).some(m => {
-    return JSON.stringify(m).includes(key);
-  });
-  return existing;
-}
-
-function updateStats(match, type) {
-  const isDoubles = type === 'doubles';
-  const playersA = isDoubles ? [match.playerA1, match.playerA2] : [match.playerA];
-  const playersB = isDoubles ? [match.playerB1, match.playerB2] : [match.playerB];
-
-  const teamA = match.teamA;
-  const teamB = match.teamB;
-
-  const winnerTeam = match.winner;
-  const loserTeam = winnerTeam === teamA ? teamB : teamA;
-  const winnerPlayers = winnerTeam === teamA ? playersA : playersB;
-  const loserPlayers = winnerTeam === teamA ? playersB : playersA;
-  const winnerTrump = winnerTeam === teamA ? match.trumpA : match.trumpB;
-  const loserTrump = winnerTeam === teamA ? match.trumpB : match.trumpA;
-
-  let winnerPoints = 1;
-  let loserPoints = 0;
-
-  if (winnerTrump) winnerPoints = 2;
-  if (loserTrump) loserPoints = -1;
-
-  const playerStats = isDoubles ? playerStatsDoubles : playerStatsSingles;
-  const teamStats = isDoubles ? teamStatsDoubles : teamStatsSingles;
-
-  winnerPlayers.forEach(p => {
-    if (!playerStats[p]) playerStats[p] = { wins: 0, losses: 0, points: 0 };
-    playerStats[p].wins++;
-    playerStats[p].points += winnerPoints;
-  });
-
-  loserPlayers.forEach(p => {
-    if (!playerStats[p]) playerStats[p] = { wins: 0, losses: 0, points: 0 };
-    playerStats[p].losses++;
-    playerStats[p].points += loserPoints;
-  });
-
-  [teamA, teamB].forEach(team => {
-    if (!teamStats[team]) teamStats[team] = { wins: 0, losses: 0, points: 0 };
-  });
-
-  teamStats[winnerTeam].wins++;
-  teamStats[winnerTeam].points += winnerPoints;
-
-  teamStats[loserTeam].losses++;
-  teamStats[loserTeam].points += loserPoints;
-
-  renderStats();
-}
-
-function renderStats() {
-  const doublesPlayerContainer = document.getElementById('doublesStats');
-  const singlesPlayerContainer = document.getElementById('singlesStats');
-  const teamStatsContainer = document.getElementById('teamStats');
-
-  doublesPlayerContainer.innerHTML = renderPlayerTable(playerStatsDoubles, 'Doubles Player Stats');
-  singlesPlayerContainer.innerHTML = renderPlayerTable(playerStatsSingles, 'Singles Player Stats');
-
-  const teamHTML = `
-    <h3>Team Stats</h3>
-    <table>
-      <tr><th>Team</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
-      ${Object.entries(teamStatsDoubles).map(([team, stat]) => `
-        <tr><td>${team}</td><td>${stat.wins}</td><td>${stat.losses}</td><td>${stat.points}</td></tr>
-      `).join('')}
-      ${Object.entries(teamStatsSingles).map(([team, stat]) => `
-        <tr><td>${team}</td><td>${stat.wins}</td><td>${stat.losses}</td><td>${stat.points}</td></tr>
-      `).join('')}
-    </table>
-  `;
-  teamStatsContainer.innerHTML = teamHTML;
-}
-
-function renderPlayerTable(stats, title) {
-  return `
-    <h3>${title}</h3>
-    <table>
-      <tr><th>Player</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
-      ${Object.entries(stats).map(([player, s]) => `
-        <tr><td>${player}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>
-      `).join('')}
-    </table>
-  `;
-}
-
-function setupButtons() {
-  document.getElementById('toggleDarkMode').addEventListener('click', () => {
-    darkMode = !darkMode;
-    document.body.classList.toggle('dark-mode', darkMode);
-  });
-
-  document.getElementById('resetTournament').addEventListener('click', () => {
-    if (confirm('Are you sure you want to reset the tournament?')) {
-      playerStatsDoubles = {};
-      playerStatsSingles = {};
-      teamStatsDoubles = {};
-      teamStatsSingles = {};
-      doublesMatches = [];
-      singlesMatches = [];
-      renderStats();
-    }
-  });
-
-  document.getElementById('exportExcel').addEventListener('click', () => {
-    const data = [['Player', 'Wins', 'Losses', 'Points']];
-    Object.entries(playerStatsDoubles).forEach(([name, s]) => {
-      data.push([name, s.wins, s.losses, s.points]);
+  document.getElementById("generateFixtures").onclick = generateFixtures;
+  document.getElementById("toggleDarkMode").onclick = () => document.body.classList.toggle("dark-mode");
+  document.getElementById("resetTournament").onclick = () => location.reload();
+  document.getElementById("exportExcel").onclick = () => {
+    let csv = "Match Type,Team A,Pair A,Team B,Pair B,Winner,Type,Points\n";
+    const all = stats.doubles.concat(stats.singles);
+    all.forEach(d => {
+      const isDoubles = d.a2 && d.b2;
+      csv += `${isDoubles ? "Doubles" : "Singles"},${d.teamA},"${d.a1}${isDoubles ? ' & ' + d.a2 : ''}",${d.teamB},"${d.b1}${isDoubles ? ' & ' + d.b2 : ''}",${d.win},${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"},${d.point}\n`;
     });
-    Object.entries(playerStatsSingles).forEach(([name, s]) => {
-      data.push([name, s.wins, s.losses, s.points]);
-    });
-
-    const csv = data.map(row => row.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = 'player_stats.csv';
+    a.download = "tournament_stats.csv";
     a.click();
+  };
+
+  document.querySelectorAll(".tab-button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.tab).classList.add("active");
+    });
   });
 
-  document.getElementById('generateFixtures').addEventListener('click', () => {
-    alert('Fixtures logic is manual - enter match data using the form below.');
-  });
-}
+  renderCaptains();
+  renderPlayerInputs();
+});
