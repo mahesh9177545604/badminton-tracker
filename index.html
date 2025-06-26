@@ -2,85 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Smash Clash Badminton League</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+  <title>Smash Clash Badminton League 2024</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="header">
-    <img src="header.png" alt="Badminton Banner" class="banner" />
-    <h1>🏸 Smash Clash Badminton League 2024</h1>
+  <header>
+    <img src="https://cdn-icons-png.flaticon.com/512/6495/6495850.png" alt="Badminton Banner" class="banner" />
+    <h1>🏸 Smash Clash Badminton League 2025</h1>
+    <div class="button-bar">
+      <button id="toggleDarkMode">🌙 Toggle Dark Mode</button>
+      <button id="resetTournament">🔄 Reset</button>
+      <button id="exportExcel">📊 Export Stats</button>
+      <button id="generateFixtures">📅 Generate Fixtures</button>
+    </div>
   </header>
 
-  <section class="controls">
-    <button id="toggleDarkMode">🌙 Toggle Dark Mode</button>
-    <button id="resetTournament">🔁 Reset</button>
-    <button id="exportExcel">📥 Export Stats</button>
-    <button id="generateFixtures">📋 Generate Fixtures</button>
-  </section>
-
-  <section id="captainDetails" class="captains-section"></section>
+  <section id="captainDetails" class="team-section"></section>
+  <section id="playerEntry" class="team-section"></section>
 
   <div class="tabs">
     <button class="tab-button active" data-tab="doublesTab">Doubles</button>
     <button class="tab-button" data-tab="singlesTab">Singles</button>
   </div>
 
-  <div class="tab-content active" id="doublesTab">
-    <form id="doublesForm" class="match-form">
-      <h3>Doubles Match Entry</h3>
-      <div class="match-row">
-        <div>
-          <label>Team A:</label>
-          <select id="teamA"></select>
-          <input type="text" id="playerA1" placeholder="Player 1" />
-          <input type="text" id="playerA2" placeholder="Player 2" />
-          <label class="trump"><input type="checkbox" id="trumpA" /> Trump Pair</label>
-        </div>
-        <div>
-          <label>Team B:</label>
-          <select id="teamB"></select>
-          <input type="text" id="playerB1" placeholder="Player 1" />
-          <input type="text" id="playerB2" placeholder="Player 2" />
-          <label class="trump"><input type="checkbox" id="trumpB" /> Trump Pair</label>
-        </div>
-      </div>
-      <div class="winner-row">
-        <label>Winner:</label>
-        <select id="winnerDoubles"></select>
-      </div>
-      <button type="submit" class="small-button">Submit Doubles Match</button>
-    </form>
-    <div id="doublesStats" class="stats-section"></div>
-  </div>
+  <section id="doublesTab" class="tab-content active">
+    <div id="doublesFixtures"></div>
+    <div id="doublesStats"></div>
+    <div id="teamStatsDoubles"></div>
+  </section>
 
-  <div class="tab-content" id="singlesTab">
-    <form id="singlesForm" class="match-form">
-      <h3>Singles Match Entry</h3>
-      <div class="match-row">
-        <div>
-          <label>Team A:</label>
-          <select id="teamSingleA"></select>
-          <input type="text" id="playerSingleA" placeholder="Player" />
-          <label class="trump"><input type="checkbox" id="trumpSingleA" /> Trump Player</label>
-        </div>
-        <div>
-          <label>Team B:</label>
-          <select id="teamSingleB"></select>
-          <input type="text" id="playerSingleB" placeholder="Player" />
-          <label class="trump"><input type="checkbox" id="trumpSingleB" /> Trump Player</label>
-        </div>
-      </div>
-      <div class="winner-row">
-        <label>Winner:</label>
-        <select id="winnerSingles"></select>
-      </div>
-      <button type="submit" class="small-button">Submit Singles Match</button>
-    </form>
-    <div id="singlesStats" class="stats-section"></div>
-  </div>
-
-  <div id="teamStats" class="stats-section"></div>
+  <section id="singlesTab" class="tab-content">
+    <div id="singlesFixtures"></div>
+    <div id="singlesStats"></div>
+    <div id="teamStatsSingles"></div>
+  </section>
 
   <script src="script.js"></script>
 </body>
