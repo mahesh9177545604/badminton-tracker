@@ -1,159 +1,228 @@
+/* General Reset and Layout */
 body {
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  background: #f4f4f4;
+  background: #f8f8f8;
   color: #333;
 }
 
 header {
-  background: #fff;
-  padding: 20px;
   text-align: center;
-  border-bottom: 2px solid #ccc;
+  background: #fff;
+  padding: 10px;
+  border-bottom: 2px solid #ddd;
 }
 
 .banner {
-  height: 50px;
-  vertical-align: middle;
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
 }
 
 h1 {
-  font-size: 2rem;
-  margin: 10px 0;
+  margin: 0.5em 0;
+  font-size: 24px;
 }
 
-.button-bar {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+.controls {
+  text-align: center;
+  padding: 1em;
+  background: #eee;
 }
 
-button {
-  padding: 8px 15px;
+.controls button {
+  margin: 5px;
+  padding: 8px 12px;
   border: none;
   background: #3498db;
   color: white;
-  border-radius: 5px;
+  font-weight: bold;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
 }
 
-button:hover {
+.controls button:hover {
   background: #2980b9;
 }
 
-.team-section {
-  background: white;
-  margin: 20px auto;
-  max-width: 800px;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.team-section h4 {
-  margin-bottom: 10px;
-}
-
-input[type="text"], select {
-  padding: 5px;
-  margin: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-input[type="checkbox"] {
-  margin: 0 5px;
-}
-
+/* Tabs */
 .tabs {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
-  gap: 10px;
+  margin-top: 10px;
 }
 
 .tab-button {
-  padding: 8px 20px;
-  border-radius: 5px;
+  padding: 8px 16px;
+  margin: 0 5px;
   border: none;
-  background: #eee;
+  background-color: #ccc;
+  cursor: pointer;
+  border-radius: 6px;
   font-weight: bold;
 }
 
 .tab-button.active {
-  background: #2ecc71;
+  background-color: #2ecc71;
   color: white;
 }
 
 .tab-content {
   display: none;
+  padding: 20px;
+  background: #fff;
+  margin: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
 }
 
 .tab-content.active {
   display: block;
 }
 
-.fixture-header {
-  font-weight: bold;
-  background: #eee;
-  padding: 10px;
-  margin: 15px 0 5px;
-  border-radius: 5px;
-}
-
+/* Forms and Fixtures */
 .match-form {
-  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px;
+  background: #fafafa;
   border-radius: 8px;
-  padding: 15px;
   margin-bottom: 20px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  border: 1px solid #ddd;
 }
 
 .match-form label {
   font-weight: bold;
-  margin-right: 5px;
+  margin-bottom: 4px;
 }
 
-.match-form select, .match-form input[type="text"] {
-  min-width: 100px;
+.match-form select,
+.match-form input[type="text"] {
+  padding: 8px;
+  width: 100%;
+  max-width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.match-form input[type="checkbox"] {
+  margin-left: 10px;
 }
 
 .match-form button {
-  margin-top: 10px;
+  width: fit-content;
+  align-self: start;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  background-color: #27ae60;
+  color: #fff;
+  cursor: pointer;
+}
+
+.match-form button:hover {
+  background-color: #219150;
+}
+
+.fixture-header {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 15px 0 5px;
+  color: #444;
+}
+
+/* Captain and Players Entry */
+#captainDetails,
+#playerEntry {
+  margin: 15px;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+
+#captainDetails input,
+#playerEntry input {
+  margin: 5px 0;
+  padding: 8px;
+  width: 100%;
+  max-width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Stats Tables */
+.stats-section {
+  margin: 15px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+
+.stats-section h3 {
+  margin-top: 0;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
 table th, table td {
   padding: 8px;
   border: 1px solid #ccc;
-  text-align: center;
+  text-align: left;
 }
 
-.dark-mode {
-  background: #1e1e1e;
-  color: white;
+/* Trump checkbox label spacing */
+.match-form label input[type="checkbox"] {
+  margin-right: 6px;
+  vertical-align: middle;
 }
 
-.dark-mode header {
-  background: #2c3e50;
-  border-bottom-color: #444;
+button.small {
+  padding: 6px 10px;
+  font-size: 13px;
 }
 
-.dark-mode .team-section, .dark-mode .match-form {
-  background: #2e2e2e;
+/* Dark Mode */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
 }
 
-.dark-mode input, .dark-mode select, .dark-mode button {
-  background: #555;
-  color: white;
-  border: 1px solid #999;
+body.dark-mode .controls,
+body.dark-mode .tab-content,
+body.dark-mode #captainDetails,
+body.dark-mode #playerEntry,
+body.dark-mode .match-form {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+body.dark-mode table {
+  color: #f0f0f0;
+  border-color: #444;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .match-form {
+    flex-direction: column;
+  }
+  .match-form input,
+  .match-form select {
+    max-width: 100%;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
