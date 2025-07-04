@@ -2,8 +2,10 @@
 // script.js - With Firebase Sync Support (Admin & Viewer Modes)
 
 // Firebase Setup (modular)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const dbRef = db.ref();
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyDyn7Khn-nLY_9w9hjx1FExQWy4AntHxjU",
