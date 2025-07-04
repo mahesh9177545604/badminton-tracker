@@ -18,9 +18,6 @@ const firebaseConfig = {
   measurementId: "G-SSMP0F2K39"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const dbRef = ref(db);
 
 let isEditor = typeof window.isEditor !== 'undefined' ? window.isEditor : false;
 
