@@ -5,8 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🏸 Smash Clash - Viewer</title>
   <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>🏸 Smash Clash - Viewer</h1>
+    <div class="controls">
+      <button id="toggleDarkMode">🌙 Toggle Dark Mode</button>
+    </div>
+  </header>
 
-  <!-- Firebase SDK (modular viewer) -->
+  <main class="content">
+    <div id="captainDetails"></div>
+    <div id="playerEntry"></div>
+
+    <div class="tabs">
+      <button class="tab-button active" data-tab="doublesTab">Doubles</button>
+      <button class="tab-button" data-tab="singlesTab">Singles</button>
+    </div>
+
+    <div class="tab-content active" id="doublesTab">
+      <div id="doublesStats"></div>
+      <div id="teamStatsDoubles"></div>
+      <div id="playerStatsDoubles"></div>
+    </div>
+
+    <div class="tab-content" id="singlesTab">
+      <div id="singlesStats"></div>
+      <div id="teamStatsSingles"></div>
+      <div id="playerStatsSingles"></div>
+    </div>
+  </main>
+
+  <!-- ✅ Firebase Viewer Script moved here -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -40,125 +70,92 @@
       playerDoubles: {}, playerSingles: {}
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const captainDiv = document.getElementById("captainDetails");
-      const playerDiv = document.getElementById("playerEntry");
+    const captainDiv = document.getElementById("captainDetails");
+    const playerDiv = document.getElementById("playerEntry");
 
-      function renderCaptains() {
-        captainDiv.innerHTML = "<h3>Captains</h3>";
-        teams.forEach((team, i) => {
-          const para = document.createElement("p");
-          para.textContent = `${team.name} Captain: ${team.captain || '—'}`;
-          para.style.color = team.color;
-          captainDiv.appendChild(para);
-        });
-      }
-
-      function renderPlayers() {
-        playerDiv.innerHTML = "<h3>Players</h3>";
-        teams.forEach(team => {
-          const div = document.createElement("div");
-          div.innerHTML = `<h4 style="color:${team.color}">${team.name}</h4><ul>${
-            team.players.map(p => `<li>${p}</li>`).join("")
-          }</ul>`;
-          playerDiv.appendChild(div);
-        });
-      }
-
-      function buildStatTable(obj, label) {
-        return `<h4>${label}</h4><table><tr><th>Name</th><th>Wins</th><th>Losses</th><th>Points</th></tr>` +
-          Object.entries(obj).map(([p, val]) =>
-            `<tr><td>${p}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`
-          ).join("") + `</table>`;
-      }
-
-      function buildMatchTable(data, isDoubles) {
-        return `<table><tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>` +
-          data.map(d => `<tr>
-            <td>${d.teamA}</td>
-            <td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
-            <td>${d.teamB}</td>
-            <td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
-            <td>${d.win}</td>
-            <td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
-            <td>${d.point}</td>
-          </tr>`).join("") + "</table>";
-      }
-
-      function renderStats() {
-        document.getElementById("doublesStats").innerHTML = buildMatchTable(stats.doubles, true);
-        document.getElementById("singlesStats").innerHTML = buildMatchTable(stats.singles, false);
-        document.getElementById("teamStatsDoubles").innerHTML = buildStatTable(stats.teamDoubles, "Team Doubles");
-        document.getElementById("teamStatsSingles").innerHTML = buildStatTable(stats.teamSingles, "Team Singles");
-        document.getElementById("playerStatsDoubles").innerHTML = buildStatTable(stats.playerDoubles, "Player Doubles");
-        document.getElementById("playerStatsSingles").innerHTML = buildStatTable(stats.playerSingles, "Player Singles");
-      }
-
-      function loadFromFirebase() {
-        get(child(dbRef, "tournamentData")).then(snapshot => {
-          if (snapshot.exists()) {
-            const data = snapshot.val();
-            if (data.teams) {
-              data.teams.forEach((t, i) => {
-                teams[i].captain = t.captain;
-                teams[i].players = t.players;
-              });
-              renderCaptains();
-              renderPlayers();
-            }
-            if (data.stats) {
-              Object.assign(stats, data.stats);
-              renderStats();
-            }
-          }
-        });
-      }
-
-      // Tab Switching
-      document.querySelectorAll(".tab-button").forEach(btn => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
-          document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
-          btn.classList.add("active");
-          document.getElementById(btn.dataset.tab).classList.add("active");
-        });
+    function renderCaptains() {
+      captainDiv.innerHTML = "<h3>Captains</h3>";
+      teams.forEach((team, i) => {
+        const para = document.createElement("p");
+        para.textContent = `${team.name} Captain: ${team.captain || '—'}`;
+        para.style.color = team.color;
+        captainDiv.appendChild(para);
       });
+    }
 
-      document.getElementById("toggleDarkMode").onclick = () =>
-        document.body.classList.toggle("dark-mode");
+    function renderPlayers() {
+      playerDiv.innerHTML = "<h3>Players</h3>";
+      teams.forEach(team => {
+        const div = document.createElement("div");
+        div.innerHTML = `<h4 style="color:${team.color}">${team.name}</h4><ul>${
+          team.players.map(p => `<li>${p}</li>`).join("")
+        }</ul>`;
+        playerDiv.appendChild(div);
+      });
+    }
 
-      loadFromFirebase();
+    function buildStatTable(obj, label) {
+      return `<h4>${label}</h4><table><tr><th>Name</th><th>Wins</th><th>Losses</th><th>Points</th></tr>` +
+        Object.entries(obj).map(([p, val]) =>
+          `<tr><td>${p}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`
+        ).join("") + `</table>`;
+    }
+
+    function buildMatchTable(data, isDoubles) {
+      return `<table><tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>` +
+        data.map(d => `<tr>
+          <td>${d.teamA}</td>
+          <td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
+          <td>${d.teamB}</td>
+          <td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
+          <td>${d.win}</td>
+          <td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
+          <td>${d.point}</td>
+        </tr>`).join("") + "</table>";
+    }
+
+    function renderStats() {
+      document.getElementById("doublesStats").innerHTML = buildMatchTable(stats.doubles, true);
+      document.getElementById("singlesStats").innerHTML = buildMatchTable(stats.singles, false);
+      document.getElementById("teamStatsDoubles").innerHTML = buildStatTable(stats.teamDoubles, "Team Doubles");
+      document.getElementById("teamStatsSingles").innerHTML = buildStatTable(stats.teamSingles, "Team Singles");
+      document.getElementById("playerStatsDoubles").innerHTML = buildStatTable(stats.playerDoubles, "Player Doubles");
+      document.getElementById("playerStatsSingles").innerHTML = buildStatTable(stats.playerSingles, "Player Singles");
+    }
+
+    function loadFromFirebase() {
+      get(child(dbRef, "tournamentData")).then(snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          if (data.teams) {
+            data.teams.forEach((t, i) => {
+              teams[i].captain = t.captain;
+              teams[i].players = t.players;
+            });
+            renderCaptains();
+            renderPlayers();
+          }
+          if (data.stats) {
+            Object.assign(stats, data.stats);
+            renderStats();
+          }
+        }
+      });
+    }
+
+    document.querySelectorAll(".tab-button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
     });
+
+    document.getElementById("toggleDarkMode").onclick = () =>
+      document.body.classList.toggle("dark-mode");
+
+    loadFromFirebase();
   </script>
-</head>
-<body>
-  <header class="header">
-    <h1>🏸 Smash Clash - Viewer</h1>
-    <div class="controls">
-      <button id="toggleDarkMode">🌙 Toggle Dark Mode</button>
-    </div>
-  </header>
-
-  <main class="content">
-    <div id="captainDetails"></div>
-    <div id="playerEntry"></div>
-
-    <div class="tabs">
-      <button class="tab-button active" data-tab="doublesTab">Doubles</button>
-      <button class="tab-button" data-tab="singlesTab">Singles</button>
-    </div>
-
-    <div class="tab-content active" id="doublesTab">
-      <div id="doublesStats"></div>
-      <div id="teamStatsDoubles"></div>
-      <div id="playerStatsDoubles"></div>
-    </div>
-
-    <div class="tab-content" id="singlesTab">
-      <div id="singlesStats"></div>
-      <div id="teamStatsSingles"></div>
-      <div id="playerStatsSingles"></div>
-    </div>
-  </main>
 </body>
 </html>
