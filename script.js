@@ -1,4 +1,3 @@
-console.log("✅ Script loaded and DOM ready");
 
 // script.js - With Firebase Sync Support (Admin & Viewer Modes)
 
@@ -10,6 +9,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDyn7Khn-nLY_9w9hjx1FExQWy4AntHxjU",
   authDomain: "smash-clash-data.firebaseapp.com",
   projectId: "smash-clash-data",
+  databaseURL: "https://smash-clash-data-default-rtdb.firebaseio.com",
   storageBucket: "smash-clash-data.firebasestorage.app",
   messagingSenderId: "479731411827",
   appId: "1:479731411827:web:d2b84774f634a4c702b306",
