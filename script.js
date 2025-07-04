@@ -1,23 +1,26 @@
+// script.js - Final version using Firebase Modular SDK
 
-// script.js - With Firebase Sync Support (Admin & Viewer Modes)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Firebase Setup (modular)
-
-
-
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDyn7Khn-nLY_9w9hjx1FExQWy4AntHxjU",
   authDomain: "smash-clash-data.firebaseapp.com",
   projectId: "smash-clash-data",
   databaseURL: "https://smash-clash-data-default-rtdb.firebaseio.com",
-  storageBucket: "smash-clash-data.firebasestorage.app",
+  storageBucket: "smash-clash-data.appspot.com",
   messagingSenderId: "479731411827",
   appId: "1:479731411827:web:d2b84774f634a4c702b306",
   measurementId: "G-SSMP0F2K39"
 };
 
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const dbRef = ref(db);
 
-let isEditor = typeof window.isEditor !== 'undefined' ? window.isEditor : false;
+// Determine mode
+const isEditor = typeof window.isEditor !== 'undefined' ? window.isEditor : false;
 
 document.addEventListener("DOMContentLoaded", () => {
   const teams = [
@@ -41,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     div.innerHTML = "";
     teams.forEach((team, i) => {
       const input = document.createElement("input");
-      input.placeholder = team.name + " Captain";
+      input.placeholder = `${team.name} Captain`;
       input.dataset.teamIndex = i;
       input.classList.add("captain-input");
       input.disabled = !isEditor;
@@ -70,8 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function getPlayerOptions(teamName) {
     const team = teams.find(t => t.name === teamName);
     if (!team) return "";
-    return [team.captain, ...team.players]
-      .filter(p => p)
+    return [team.captain, ...team.players].filter(Boolean)
       .map(p => `<option value="${p}">${p}</option>`).join("");
   }
 
@@ -102,6 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         form.innerHTML = `<h4>${teamA} vs ${teamB}</h4>`;
         const count = isDoubles ? 3 : 2;
+
         for (let k = 0; k < count; k++) {
           form.innerHTML += `
             <div class="pair-entry">
@@ -124,6 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         submit.textContent = "Submit Match";
         submit.disabled = !isEditor;
         form.appendChild(submit);
+
         form.addEventListener("submit", e => handleMatchSubmit(e, teamA, teamB, isDoubles));
         container.appendChild(form);
       }
@@ -145,18 +149,21 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let pair of pairs) {
       const selects = pair.querySelectorAll("select");
       const checks = pair.querySelectorAll("input[type='checkbox']");
-      const [a1, a2, b1, b2, winSelect] = isDoubles ? [selects[0], selects[1], selects[2], selects[3], selects[4]] : [selects[0], null, selects[1], null, selects[2]];
+      const [a1, a2, b1, b2, win] = isDoubles
+        ? [selects[0], selects[1], selects[2], selects[3], selects[4]]
+        : [selects[0], null, selects[1], null, selects[2]];
+
       const aTrump = checks[0].checked;
       const bTrump = checks[1].checked;
 
-      if (!a1.value || !b1.value || !winSelect.value || (isDoubles && (!a2.value || !b2.value))) {
+      if (!a1.value || !b1.value || !win.value || (isDoubles && (!a2.value || !b2.value))) {
         alert("Fill all fields.");
         return;
       }
       if (aTrump && trumpUsed[teamA]) return alert(`${teamA} already used Trump.`);
       if (bTrump && trumpUsed[teamB]) return alert(`${teamB} already used Trump.`);
 
-      const winner = winSelect.value;
+      const winner = win.value;
       const loser = winner === teamA ? teamB : teamA;
       const winnerTrump = winner === teamA ? aTrump : bTrump;
       const loserTrump = winner === teamA ? bTrump : aTrump;
@@ -180,24 +187,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     submittedMatches.add(fixtureId);
     renderStats();
-    saveToFirebase(); // Auto sync on match entry
+    if (isEditor) saveToFirebase();
   }
 
   function updateTeamStats(team, isDoubles, pts) {
     const key = isDoubles ? "teamDoubles" : "teamSingles";
     if (!stats[key][team]) stats[key][team] = { wins: 0, losses: 0, points: 0 };
-    if (pts > 0) stats[key][team].wins += 1;
-    if (pts < 0) stats[key][team].losses += 1;
+    if (pts > 0) stats[key][team].wins++;
+    if (pts < 0) stats[key][team].losses++;
     stats[key][team].points += pts;
   }
 
-  function updatePlayerStats(name, pair, pts, isDoubles) {
+  function updatePlayerStats(team, players, pts, isDoubles) {
     const key = isDoubles ? "playerDoubles" : "playerSingles";
-    pair.forEach(p => {
+    players.forEach(p => {
       if (!p) return;
       if (!stats[key][p]) stats[key][p] = { wins: 0, losses: 0, points: 0 };
-      if (pts > 0) stats[key][p].wins += 1;
-      if (pts < 0) stats[key][p].losses += 1;
+      if (pts > 0) stats[key][p].wins++;
+      if (pts < 0) stats[key][p].losses++;
       stats[key][p].points += pts;
     });
   }
@@ -208,13 +215,15 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${d.teamA}</td><td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
         <td>${d.teamB}</td><td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
         <td>${d.win}</td><td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
-        <td>${d.point}</td></tr>`).join("") + `</table>`;
+        <td>${d.point}</td>
+      </tr>`).join("") + "</table>";
   }
 
   function buildStatTable(obj, label) {
     return `<h4>${label}</h4><table><tr><th>Name</th><th>Wins</th><th>Losses</th><th>Points</th></tr>` +
-      Object.entries(obj).map(([p, val]) =>
-        `<tr><td>${p}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`).join("") + `</table>`;
+      Object.entries(obj).map(([name, val]) =>
+        `<tr><td>${name}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`
+      ).join("") + "</table>";
   }
 
   function renderStats() {
@@ -227,16 +236,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveToFirebase() {
-    if (!isEditor) return;
     const payload = { teams, stats };
     set(ref(db, "tournamentData"), payload);
   }
 
   function loadFromFirebase() {
-    firebase.database().ref("tournamentData").get().then(snapshot => {
+    get(child(dbRef, "tournamentData")).then(snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        if (data.teams) data.teams.forEach((team, i) => {
+        data.teams.forEach((team, i) => {
           teams[i].captain = team.captain;
           teams[i].players = team.players;
         });
@@ -248,6 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // UI Handlers
   document.getElementById("generateFixtures").onclick = () => {
     updateTeamDataFromInputs();
     renderFixtures("doublesFixtures", true);
@@ -255,10 +264,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isEditor) saveToFirebase();
   };
 
-  document.getElementById("toggleDarkMode").onclick = () => document.body.classList.toggle("dark-mode");
+  document.getElementById("toggleDarkMode").onclick = () => {
+    document.body.classList.toggle("dark-mode");
+  };
 
   document.getElementById("resetTournament").onclick = () => {
-    if (confirm("Are you sure to reset? This will clear everything!")) location.reload();
+    if (confirm("Are you sure you want to reset all data?")) location.reload();
   };
 
   renderCaptains();
