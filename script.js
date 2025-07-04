@@ -235,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function loadFromFirebase() {
-    get(child(dbRef, "tournamentData")).then(snapshot => {
+    firebase.database().ref("tournamentData").get().then(snapshot => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         if (data.teams) data.teams.forEach((team, i) => {
