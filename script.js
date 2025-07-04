@@ -24,11 +24,12 @@ const isEditor = typeof window.isEditor !== 'undefined' ? window.isEditor : fals
 
 document.addEventListener("DOMContentLoaded", () => {
   const teams = [
-    { name: "Red Raptors", color: "red", players: [], captain: "" },
-    { name: "Green Smashers", color: "green", players: [], captain: "" },
-    { name: "Blue Blasters", color: "blue", players: [], captain: "" },
-    { name: "Yellow Flyers", color: "gold", players: [], captain: "" },
-    { name: "Purple Hurricanes", color: "purple", players: [], captain: "" }
+    { name: "Red Rhinos", color: "red", players: [], captain: "" },
+    { name: "Orange Owls", color: "Orange", players: [], captain: "" },
+    { name: "Black Bears", color: "Black", players: [], captain: "" },
+    { name: "Yellow yaks", color: "Yellow", players: [], captain: "" },
+    { name: "Purple Pythons", color: "purple", players: [], captain: "" },
+    { name: "Pink Pumas", color: "Pink", players: [], captain: "" }
   ];
 
   const stats = {
