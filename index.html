@@ -36,7 +36,7 @@
     </div>
   </main>
 
-  <!-- ✅ Firebase Viewer Script moved here -->
+  <!-- ✅ Firebase Viewer Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -57,13 +57,11 @@
     const dbRef = ref(db);
 
     const teams = [
-      const teams = [
-    { name: "Red Rhinos", color: "red", players: [], captain: "" },
-    { name: "Orange Owls", color: "Orange", players: [], captain: "" },
-    { name: "Black Bears", color: "Black", players: [], captain: "" },
-    { name: "Yellow yaks", color: "Yellow", players: [], captain: "" },
-    { name: "Purple Pythons", color: "purple", players: [], captain: "" },
-    { name: "Pink Pumas", color: "Pink", players: [], captain: "" }
+      { name: "Red Raptors", color: "red", players: [], captain: "" },
+      { name: "Green Smashers", color: "green", players: [], captain: "" },
+      { name: "Blue Blasters", color: "blue", players: [], captain: "" },
+      { name: "Yellow Flyers", color: "gold", players: [], captain: "" },
+      { name: "Purple Hurricanes", color: "purple", players: [], captain: "" }
     ];
 
     const stats = {
@@ -72,48 +70,54 @@
       playerDoubles: {}, playerSingles: {}
     };
 
-    const captainDiv = document.getElementById("captainDetails");
-    const playerDiv = document.getElementById("playerEntry");
-
     function renderCaptains() {
-      captainDiv.innerHTML = "<h3>Captains</h3>";
-      teams.forEach((team, i) => {
-        const para = document.createElement("p");
-        para.textContent = `${team.name} Captain: ${team.captain || '—'}`;
-        para.style.color = team.color;
-        captainDiv.appendChild(para);
+      const div = document.getElementById("captainDetails");
+      div.innerHTML = "<h3>Captains</h3>";
+      teams.forEach(team => {
+        const p = document.createElement("p");
+        p.textContent = `${team.name} Captain: ${team.captain || "—"}`;
+        p.style.color = team.color;
+        div.appendChild(p);
       });
     }
 
     function renderPlayers() {
-      playerDiv.innerHTML = "<h3>Players</h3>";
+      const div = document.getElementById("playerEntry");
+      div.innerHTML = "<h3>Players</h3>";
       teams.forEach(team => {
-        const div = document.createElement("div");
-        div.innerHTML = `<h4 style="color:${team.color}">${team.name}</h4><ul>${
+        const tDiv = document.createElement("div");
+        tDiv.innerHTML = `<h4 style="color:${team.color}">${team.name}</h4><ul>${
           team.players.map(p => `<li>${p}</li>`).join("")
         }</ul>`;
-        playerDiv.appendChild(div);
+        div.appendChild(tDiv);
       });
     }
 
-    function buildStatTable(obj, label) {
-      return `<h4>${label}</h4><table><tr><th>Name</th><th>Wins</th><th>Losses</th><th>Points</th></tr>` +
-        Object.entries(obj).map(([p, val]) =>
-          `<tr><td>${p}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`
-        ).join("") + `</table>`;
+    function buildStatTable(data, title) {
+      return `<h4>${title}</h4>
+      <table>
+        <tr><th>Name</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
+        ${Object.entries(data).map(([name, s]) =>
+          `<tr><td>${name}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>`
+        ).join("")}
+      </table>`;
     }
 
     function buildMatchTable(data, isDoubles) {
-      return `<table><tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>` +
-        data.map(d => `<tr>
-          <td>${d.teamA}</td>
-          <td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
-          <td>${d.teamB}</td>
-          <td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
-          <td>${d.win}</td>
-          <td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
-          <td>${d.point}</td>
-        </tr>`).join("") + "</table>";
+      return `
+      <table>
+        <tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>
+        ${data.map(d => `
+          <tr>
+            <td>${d.teamA}</td>
+            <td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
+            <td>${d.teamB}</td>
+            <td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
+            <td>${d.win}</td>
+            <td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
+            <td>${d.point}</td>
+          </tr>`).join("")}
+      </table>`;
     }
 
     function renderStats() {
@@ -125,7 +129,7 @@
       document.getElementById("playerStatsSingles").innerHTML = buildStatTable(stats.playerSingles, "Player Singles");
     }
 
-    function loadFromFirebase() {
+    function loadData() {
       get(child(dbRef, "tournamentData")).then(snapshot => {
         if (snapshot.exists()) {
           const data = snapshot.val();
@@ -141,9 +145,16 @@
             Object.assign(stats, data.stats);
             renderStats();
           }
+        } else {
+          document.body.innerHTML += "<p style='color:red;'>❌ No tournament data found in Firebase.</p>";
         }
+      }).catch(err => {
+        console.error("❌ Firebase read error:", err);
       });
     }
+
+    document.getElementById("toggleDarkMode").onclick = () =>
+      document.body.classList.toggle("dark-mode");
 
     document.querySelectorAll(".tab-button").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -154,10 +165,7 @@
       });
     });
 
-    document.getElementById("toggleDarkMode").onclick = () =>
-      document.body.classList.toggle("dark-mode");
-
-    loadFromFirebase();
+    loadData();
   </script>
 </body>
 </html>
