@@ -23,12 +23,6 @@ body {
   display: block;
   margin: 10px auto 0;
 }
-.header {
-  text-align: center;
-  padding: 1em;
-  background-color: #ffffff;
-  border-bottom: 2px solid #ddd;
-}
 
 /* Header */
 
