@@ -8,6 +8,14 @@ body {
   margin: 0;
   padding: 0;
 }
+.with-banner {
+  background: url('your-logo.png') no-repeat center center;
+  background-size: contain;
+  background-color: #f5f5f5;
+  padding: 100px 20px 40px; /* Adjust padding as needed */
+  text-align: center;
+}
+
 .main-banner {
   max-width: 100%;
   height: auto;
