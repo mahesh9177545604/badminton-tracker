@@ -2,9 +2,7 @@
 // script.js - With Firebase Sync Support (Admin & Viewer Modes)
 
 // Firebase Setup (modular)
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const dbRef = db.ref();
+
 
 
 const firebaseConfig = {
