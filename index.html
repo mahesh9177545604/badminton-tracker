@@ -2,42 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smash Clash Badminton League 2024</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smash Clash Admin Panel</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Firebase compat (matches script.js style) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyn7Khn-nLY_9w9hjx1FExQWy4AntHxjU",
+      authDomain: "smash-clash-data.firebaseapp.com",
+      projectId: "smash-clash-data",
+      storageBucket: "smash-clash-data.appspot.com",
+      messagingSenderId: "479731411827",
+      appId: "1:479731411827:web:d2b84774f634a4c702b306",
+      measurementId: "G-SSMP0F2K39"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+  </script>
 </head>
 <body>
-  <header>
-    <img src="https://cdn-icons-png.flaticon.com/512/6495/6495850.png" alt="Badminton Banner" class="banner" />
-    <h1>🏸 Smash Clash Badminton League 2025</h1>
-    <div class="button-bar">
-      <button id="toggleDarkMode">🌙 Toggle Dark Mode</button>
-      <button id="resetTournament">🔄 Reset</button>
-      <button id="exportExcel">📊 Export Stats</button>
-      <button id="generateFixtures">📅 Generate Fixtures</button>
+  <header class="header">
+    <h1>🏸 Smash Clash - Admin Panel</h1>
+    <div class="controls">
+      <button id="toggleDarkMode">🌙 Dark Mode</button>
+      <button id="resetTournament">🔁 Reset</button>
+      <button id="exportExcel">📤 Export Stats</button>
+      <button id="generateFixtures">📋 Generate Fixtures</button>
     </div>
   </header>
 
-  <section id="captainDetails" class="team-section"></section>
-  <section id="playerEntry" class="team-section"></section>
+  <main class="content">
+    <div id="captainDetails"></div>
+    <div id="playerEntry"></div>
 
-  <div class="tabs">
-    <button class="tab-button active" data-tab="doublesTab">Doubles</button>
-    <button class="tab-button" data-tab="singlesTab">Singles</button>
-  </div>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-button active" data-tab="doublesTab">Doubles</button>
+      <button class="tab-button" data-tab="singlesTab">Singles</button>
+    </div>
 
-  <section id="doublesTab" class="tab-content active">
-    <div id="doublesFixtures"></div>
-    <div id="doublesStats"></div>
-    <div id="teamStatsDoubles"></div>
-  </section>
+    <!-- Doubles Section -->
+    <div class="tab-content active" id="doublesTab">
+      <div id="doublesFixtures"></div>
+      <div id="doublesStats"></div>
+      <div id="teamStatsDoubles"></div>
+      <div id="playerStatsDoubles"></div>
+    </div>
 
-  <section id="singlesTab" class="tab-content">
-    <div id="singlesFixtures"></div>
-    <div id="singlesStats"></div>
-    <div id="teamStatsSingles"></div>
-  </section>
+    <!-- Singles Section -->
+    <div class="tab-content" id="singlesTab">
+      <div id="singlesFixtures"></div>
+      <div id="singlesStats"></div>
+      <div id="teamStatsSingles"></div>
+      <div id="playerStatsSingles"></div>
+    </div>
+  </main>
 
-  <script src="script.js"></script>
+  <!-- Set editor mode -->
+  <script>
+    const isEditor = true;
+  </script>
+  <script type="module" src="script.js"></script>
+
 </body>
 </html>
