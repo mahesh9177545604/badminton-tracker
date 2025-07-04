@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smash Clash Admin Panel</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Firebase compat (matches script.js style) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyn7Khn-nLY_9w9hjx1FExQWy4AntHxjU",
+      authDomain: "smash-clash-data.firebaseapp.com",
+      projectId: "smash-clash-data",
+      storageBucket: "smash-clash-data.appspot.com",
+      messagingSenderId: "479731411827",
+      appId: "1:479731411827:web:d2b84774f634a4c702b306",
+      measurementId: "G-SSMP0F2K39"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+  </script>
+</head>
+<body>
+  <header class="header">
+    <h1>🏸 Smash Clash - Admin Panel</h1>
+    <div class="controls">
+      <button id="toggleDarkMode">🌙 Dark Mode</button>
+      <button id="resetTournament">🔁 Reset</button>
+      <button id="exportExcel">📤 Export Stats</button>
+      <button id="generateFixtures">📋 Generate Fixtures</button>
+    </div>
+  </header>
+
+  <main class="content">
+    <div id="captainDetails"></div>
+    <div id="playerEntry"></div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-button active" data-tab="doublesTab">Doubles</button>
+      <button class="tab-button" data-tab="singlesTab">Singles</button>
+    </div>
+
+    <!-- Doubles Section -->
+    <div class="tab-content active" id="doublesTab">
+      <div id="doublesFixtures"></div>
+      <div id="doublesStats"></div>
+      <div id="teamStatsDoubles"></div>
+      <div id="playerStatsDoubles"></div>
+    </div>
+
+    <!-- Singles Section -->
+    <div class="tab-content" id="singlesTab">
+      <div id="singlesFixtures"></div>
+      <div id="singlesStats"></div>
+      <div id="teamStatsSingles"></div>
+      <div id="playerStatsSingles"></div>
+    </div>
+  </main>
+
+  <!-- Set editor mode -->
+  <script>
+    const isEditor = true;
+  </script>
+  <script type="module" src="script.js"></script>
+
+</body>
+</html>
