@@ -19,6 +19,7 @@ body {
 }
 
 .logo-bar {
+  background: url('image.png') no-repeat center center;
   display: flex;
   flex-direction: column;
   align-items: center;
