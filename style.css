@@ -20,20 +20,16 @@ body {
 }
 
 .banner-container {
-  display: flex;
+  
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px 0;
-  position: relative;
+  
 }
 
 .main-banner {
-  height: 300px;
-  width: 640px;
-  object-fit: contain;
-  align-items: center;
+    height: 345px;
+    width: 938px;
+    object-fit: fill;
+    align-items: center;
 }
 
 .event-title {
@@ -47,7 +43,7 @@ body {
 .sponsor-text {
   font-size: 0.9rem;
   color: #666;
-  position: absolute;
+  
   right: 0;
   top: 5px;
   padding-right: 1rem;
