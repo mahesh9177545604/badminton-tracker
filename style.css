@@ -26,8 +26,8 @@ body {
 }
 
 .main-banner {
-    height: 345px;
-    width: 938px;
+    height: 400px;
+    width: 100%;
     object-fit: fill;
     align-items: center;
 }
