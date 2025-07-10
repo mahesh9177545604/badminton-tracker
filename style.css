@@ -30,9 +30,10 @@ body {
 }
 
 .main-banner {
-  height: 80px;
-  width: auto;
+  height: 300px;
+  width: 640px;
   object-fit: contain;
+  align-items: center;
 }
 
 .event-title {
