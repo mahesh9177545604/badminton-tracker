@@ -1,3 +1,4 @@
+
 // script.js - Smash Clash Admin + Viewer Logic
 
 // Firebase Setup (modular)
@@ -48,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       input.dataset.teamIndex = i;
       input.classList.add("captain-input");
       input.disabled = !isEditor;
+      input.value = team.captain || "";
       div.appendChild(input);
     });
   }
@@ -64,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         input.dataset.teamIndex = i;
         input.classList.add("player-name-input");
         input.disabled = !isEditor;
+        input.value = team.players[j] || "";
         teamDiv.appendChild(input);
       }
       div.appendChild(teamDiv);
@@ -79,16 +82,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateTeamDataFromInputs() {
-    document.querySelectorAll(".captain-input").forEach(input => {
-      const idx = input.dataset.teamIndex;
-      teams[idx].captain = input.value.trim();
-    });
-    document.querySelectorAll(".player-name-input").forEach(input => {
-      const idx = input.dataset.teamIndex;
-      const name = input.value.trim();
-      if (name && !teams[idx].players.includes(name)) {
-        teams[idx].players.push(name);
-      }
+    teams.forEach((team, i) => {
+      const captainInput = document.querySelector(`.captain-input[data-team-index="${i}"]`);
+      team.captain = captainInput.value.trim();
+
+      const playerInputs = document.querySelectorAll(`.player-name-input[data-team-index="${i}"]`);
+      team.players = Array.from(playerInputs).map(input => input.value.trim()).filter(p => p);
     });
   }
 
@@ -176,8 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
         isTrump: winnerTrump, isTrumpLost: loserTrump, point: winnerPts
       });
 
-      updateTeamStats(winner, isDoubles, winnerPts);
-      updateTeamStats(loser, isDoubles, loserPts);
+      updateTeamStats(winner, isDoubles, winnerPts, true);
+      updateTeamStats(loser, isDoubles, loserPts, false);
       updatePlayerStats(winnerPair, winnerPts, isDoubles);
       updatePlayerStats(loserPair, loserPts, isDoubles);
 
@@ -190,12 +189,13 @@ document.addEventListener("DOMContentLoaded", () => {
     saveToFirebase();
   }
 
-  function updateTeamStats(team, isDoubles, pts) {
+  function updateTeamStats(team, isDoubles, pts, isWin) {
     const key = isDoubles ? "teamDoubles" : "teamSingles";
-    if (!stats[key][team]) stats[key][team] = { wins: 0, losses: 0, points: 0 };
-    if (pts > 0) stats[key][team].wins += 1;
-    if (pts < 0) stats[key][team].losses += 1;
+    if (!stats[key][team]) stats[key][team] = { wins: 0, losses: 0, points: 0, matches: 0 };
+    if (isWin) stats[key][team].wins += 1;
+    else stats[key][team].losses += 1;
     stats[key][team].points += pts;
+    stats[key][team].matches += 1;
   }
 
   function updatePlayerStats(pair, pts, isDoubles) {
@@ -210,24 +210,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function buildMatchTable(data, isDoubles) {
-    return `<table><tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>` +
-      data.map(d => `<tr>
-        <td>${d.teamA}</td>
-        <td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
-        <td>${d.teamB}</td>
-        <td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
-        <td>${d.win}</td>
-        <td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
-        <td>${d.point}</td>
-      </tr>`).join("") + "</table>";
-  }
-
   function buildTeamStatTable(obj, label) {
     const sorted = Object.entries(obj).sort((a, b) => b[1].points - a[1].points);
-    return `<h4>${label}</h4><table><tr><th>Team</th><th>Wins</th><th>Losses</th><th>Points</th></tr>` +
+    return `<h4>${label}</h4><table><tr><th>Team</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>` +
       sorted.map(([team, val]) =>
-        `<tr><td>${team}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`
+        `<tr><td>${team}</td><td>${val.matches}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`
       ).join("") + `</table>`;
   }
 
@@ -281,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.toggle("dark-mode");
 
   document.getElementById("resetTournament").onclick = () => {
-    if (confirm("Are you sure you want to reset the tournament?")) {
+    if (confirm("Are you sure you want to reset the tournament? This cannot be undone.")) {
       location.reload();
     }
   };
