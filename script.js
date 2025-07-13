@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
       input.dataset.teamIndex = i;
       input.classList.add("captain-input");
       input.disabled = !isEditor;
-      input.value = team.captain || "";
       div.appendChild(input);
     });
   }
@@ -66,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
         input.dataset.teamIndex = i;
         input.classList.add("player-name-input");
         input.disabled = !isEditor;
-        input.value = team.players[j] || "";
         teamDiv.appendChild(input);
       }
       div.appendChild(teamDiv);
@@ -82,12 +80,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateTeamDataFromInputs() {
-    teams.forEach((team, i) => {
-      const captainInput = document.querySelector(`.captain-input[data-team-index="${i}"]`);
-      team.captain = captainInput.value.trim();
-
-      const playerInputs = document.querySelectorAll(`.player-name-input[data-team-index="${i}"]`);
-      team.players = Array.from(playerInputs).map(input => input.value.trim()).filter(p => p);
+    document.querySelectorAll(".captain-input").forEach(input => {
+      const idx = input.dataset.teamIndex;
+      teams[idx].captain = input.value.trim();
+    });
+    document.querySelectorAll(".player-name-input").forEach(input => {
+      const idx = input.dataset.teamIndex;
+      const name = input.value.trim();
+      if (name && !teams[idx].players.includes(name)) {
+        teams[idx].players.push(name);
+      }
     });
   }
 
@@ -192,10 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateTeamStats(team, isDoubles, pts, isWin) {
     const key = isDoubles ? "teamDoubles" : "teamSingles";
     if (!stats[key][team]) stats[key][team] = { wins: 0, losses: 0, points: 0, matches: 0 };
-    if (isWin) stats[key][team].wins += 1;
-    else stats[key][team].losses += 1;
+    isWin ? stats[key][team].wins++ : stats[key][team].losses++;
     stats[key][team].points += pts;
-    stats[key][team].matches += 1;
+    stats[key][team].matches++;
   }
 
   function updatePlayerStats(pair, pts, isDoubles) {
@@ -224,6 +225,19 @@ document.addEventListener("DOMContentLoaded", () => {
       sorted.map(([name, val]) =>
         `<tr><td>${name}</td><td>${val.matches}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`
       ).join("") + `</table>`;
+  }
+
+  function buildMatchTable(data, isDoubles) {
+    return `<table><tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>` +
+      data.map(d => `<tr>
+        <td>${d.teamA}</td>
+        <td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
+        <td>${d.teamB}</td>
+        <td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
+        <td>${d.win}</td>
+        <td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
+        <td>${d.point}</td>
+      </tr>`).join("") + "</table>";
   }
 
   function renderStats() {
@@ -268,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.toggle("dark-mode");
 
   document.getElementById("resetTournament").onclick = () => {
-    if (confirm("Are you sure you want to reset the tournament? This cannot be undone.")) {
+    if (confirm("Are you sure you want to reset the tournament?")) {
       location.reload();
     }
   };
