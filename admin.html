@@ -1,19 +1,18 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smash Clash 2K25 - Admin Panel</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Logo Section -->
   <div class="logo-sponsor-wrapper">
     <img src="main-logo.png" alt="Smash Clash Logo" class="main-logo" />
     <img src="sponsor-logo.png" alt="Sponsor Logo" class="main-logo" />
   </div>
 
-  <!-- Header & Controls -->
   <div class="header">
     <h1>Smash Clash 2K25 - Admin Panel</h1>
     <div class="controls">
@@ -23,39 +22,28 @@
     </div>
   </div>
 
-  <!-- Captain and Player Inputs -->
   <div id="captainDetails" class="section-box"></div>
   <div id="playerEntry" class="section-box"></div>
 
-  <!-- Tabs for Match Types -->
   <div class="tabs">
     <button class="tab-button active" onclick="showTab('doubles')">Doubles</button>
     <button class="tab-button" onclick="showTab('singles')">Singles</button>
   </div>
 
-  <!-- Doubles Section -->
   <div id="doubles" class="tab-content active">
-    <div class="section-box">
-      <h3>Doubles Fixtures</h3>
-      <div id="doublesFixtures"></div>
-    </div>
+    <div id="doublesFixtures"></div>
     <div id="doublesStats" class="section-box"></div>
     <div id="teamStatsDoubles" class="section-box"></div>
     <div id="playerStatsDoubles" class="section-box"></div>
   </div>
 
-  <!-- Singles Section -->
   <div id="singles" class="tab-content">
-    <div class="section-box">
-      <h3>Singles Fixtures</h3>
-      <div id="singlesFixtures"></div>
-    </div>
+    <div id="singlesFixtures"></div>
     <div id="singlesStats" class="section-box"></div>
     <div id="teamStatsSingles" class="section-box"></div>
     <div id="playerStatsSingles" class="section-box"></div>
   </div>
 
-  <!-- Tab Switching Script -->
   <script>
     window.isEditor = true;
     function showTab(tab) {
@@ -65,8 +53,6 @@
       document.getElementById(tab).classList.add("active");
     }
   </script>
-
-  <!-- Main JS -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
