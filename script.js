@@ -204,12 +204,13 @@ document.addEventListener("DOMContentLoaded", () => {
     pair.forEach(p => {
       if (!p) return;
       if (!stats[key][p]) stats[key][p] = { wins: 0, losses: 0, points: 0, matches: 0 };
-      if (pts > 0) stats[key][p].wins += 1;
-      else if (pts < 0) stats[key][p].losses += 1;
-      stats[key][p].points += pts;
       stats[key][p].matches += 1;
+      stats[key][p].points += pts;
+      if (pts > 0) stats[key][p].wins += 1;
+      else stats[key][p].losses += 1;
     });
   }
+
 
   function buildTeamStatTable(obj, label) {
     const sorted = Object.entries(obj).sort((a, b) => b[1].points - a[1].points);
@@ -221,11 +222,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function buildPlayerStatTable(obj, label) {
     const sorted = Object.entries(obj).sort((a, b) => b[1].points - a[1].points);
-    return `<h4>${label}</h4><table><tr><th>Player</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>` +
+    return \`<h4>\${label}</h4><table><tr><th>Player</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>\` +
       sorted.map(([name, val]) =>
-        `<tr><td>${name}</td><td>${val.matches}</td><td>${val.wins}</td><td>${val.losses}</td><td>${val.points}</td></tr>`
+        \`<tr><td>\${name}</td><td>\${val.matches}</td><td>\${val.wins}</td><td>\${val.losses}</td><td>\${val.points}</td></tr>\`
       ).join("") + `</table>`;
   }
+
 
   function buildMatchTable(data, isDoubles) {
     return `<table><tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>` +
