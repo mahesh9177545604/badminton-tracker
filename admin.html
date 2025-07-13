@@ -1,76 +1,58 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smash Clash Admin Panel</title>
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Firebase compat (matches script.js style) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDyn7Khn-nLY_9w9hjx1FExQWy4AntHxjU",
-      authDomain: "smash-clash-data.firebaseapp.com",
-      databaseURL: "https://smash-clash-data-default-rtdb.firebaseio.com",
-
-      projectId: "smash-clash-data",
-      storageBucket: "smash-clash-data.appspot.com",
-      messagingSenderId: "479731411827",
-      appId: "1:479731411827:web:d2b84774f634a4c702b306",
-      measurementId: "G-SSMP0F2K39"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smash Clash 2K25 - Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="header">
-    <h1>🏸 Smash Clash - Admin Panel</h1>
+  <div class="logo-sponsor-wrapper">
+    <img src="main-logo.png" alt="Smash Clash Logo" class="main-logo" />
+    <img src="sponsor-logo.png" alt="Sponsor Logo" class="main-logo" />
+  </div>
+
+  <div class="header">
+    <h1>Smash Clash 2K25 - Admin Panel</h1>
     <div class="controls">
-      <button id="toggleDarkMode">🌙 Dark Mode</button>
-      <button id="resetTournament">🔁 Reset</button>
-      <button id="exportExcel">📤 Export Stats</button>
-      <button id="generateFixtures">📋 Generate Fixtures</button>
+      <button id="generateFixtures">Generate Fixtures</button>
+      <button id="toggleDarkMode">Toggle Dark Mode</button>
+      <button id="resetTournament">Reset Tournament</button>
     </div>
-  </header>
+  </div>
 
-  <main class="content">
-    <div id="captainDetails"></div>
-    <div id="playerEntry"></div>
+  <div id="captainDetails" class="section-box"></div>
+  <div id="playerEntry" class="section-box"></div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-button active" data-tab="doublesTab">Doubles</button>
-      <button class="tab-button" data-tab="singlesTab">Singles</button>
-    </div>
+  <div class="tabs">
+    <button class="tab-button active" onclick="showTab('doubles')">Doubles</button>
+    <button class="tab-button" onclick="showTab('singles')">Singles</button>
+  </div>
 
-    <!-- Doubles Section -->
-    <div class="tab-content active" id="doublesTab">
-      <div id="doublesFixtures"></div>
-      <div id="doublesStats"></div>
-      <div id="teamStatsDoubles"></div>
-      <div id="playerStatsDoubles"></div>
-    </div>
+  <div id="doubles" class="tab-content active">
+    <div id="doublesFixtures"></div>
+    <div id="doublesStats" class="section-box"></div>
+    <div id="teamStatsDoubles" class="section-box"></div>
+    <div id="playerStatsDoubles" class="section-box"></div>
+  </div>
 
-    <!-- Singles Section -->
-    <div class="tab-content" id="singlesTab">
-      <div id="singlesFixtures"></div>
-      <div id="singlesStats"></div>
-      <div id="teamStatsSingles"></div>
-      <div id="playerStatsSingles"></div>
-    </div>
-  </main>
+  <div id="singles" class="tab-content">
+    <div id="singlesFixtures"></div>
+    <div id="singlesStats" class="section-box"></div>
+    <div id="teamStatsSingles" class="section-box"></div>
+    <div id="playerStatsSingles" class="section-box"></div>
+  </div>
 
-  <!-- Set editor mode -->
   <script>
-  window.isEditor = true;
-</script>
-<script type="module" src="script.js"></script>
-
-
-
+    window.isEditor = true;
+    function showTab(tab) {
+      document.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(div => div.classList.remove("active"));
+      document.querySelector(`.tab-button[onclick="showTab('${tab}')"]`).classList.add("active");
+      document.getElementById(tab).classList.add("active");
+    }
+  </script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
