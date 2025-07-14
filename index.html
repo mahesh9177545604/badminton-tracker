@@ -8,20 +8,15 @@
 </head>
 <body>
   <header class="top-header">
-  <div class="banner-container">
-    <img class="main-banner" src="image.png" alt="Smash Clash Logo" />
-    <div class="event-title">🏸 Smash Clash – Viewer</div>
-    <div class="sponsor-text">Sponsored by <a href="https://whatsapp.com/channel/0029Va9yN3pKLaHjtm6EZe3L"><strong>PC REALTY</strong></a></div>
-    <div class="controls">
-    <button id="toggleDarkMode">🌙 Toggle Dark Mode</button>
-  </div>
-  </div>
-
-  
-</header>
-
-
-
+    <div class="banner-container">
+      <img class="main-banner" src="image.png" alt="Smash Clash Logo" />
+      <div class="event-title">🏸 Smash Clash – Viewer</div>
+      <div class="sponsor-text">Sponsored by <a href="https://whatsapp.com/channel/0029Va9yN3pKLaHjtm6EZe3L"><strong>PC REALTY</strong></a></div>
+      <div class="controls">
+        <button id="toggleDarkMode">🌙 Toggle Dark Mode</button>
+      </div>
+    </div>
+  </header>
 
   <main class="content">
     <div id="captainDetails"></div>
@@ -45,7 +40,6 @@
     </div>
   </main>
 
-  <!-- ✅ Firebase Viewer Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -67,11 +61,11 @@
 
     const teams = [
       { name: "RED RHINOS", color: "red", players: [], captain: "" },
-    { name: "ORANGE OCELOTS", color: "Orange", players: [], captain: "" },
-    { name: "BLACK BULLS", color: "Black", players: [], captain: "" },
-    { name: "MAROON MUSTANGS", color: "Maroon", players: [], captain: "" },
-    { name: "WHITE WOLVES", color: "Black", players: [], captain: "" },
-    { name: "BLUE BERSERKERS", color: "Blue", players: [], captain: "" }
+      { name: "ORANGE OCELOTS", color: "orange", players: [], captain: "" },
+      { name: "BLACK BULLS", color: "black", players: [], captain: "" },
+      { name: "MAROON MUSTANGS", color: "maroon", players: [], captain: "" },
+      { name: "WHITE WOLVES", color: "gray", players: [], captain: "" },
+      { name: "BLUE BERSERKERS", color: "blue", players: [], captain: "" }
     ];
 
     const stats = {
@@ -103,40 +97,50 @@
       });
     }
 
-    function buildStatTable(data, title) {
+    function buildPlayerStatTable(data, title) {
       return `<h4>${title}</h4>
-      <table>
-        <tr><th>Name</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
-        ${Object.entries(data).map(([name, s]) =>
-          `<tr><td>${name}</td></td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>`
-        ).join("")}
-      </table>`;
+        <table>
+          <tr><th>Player</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
+          ${Object.entries(data).map(([name, s]) =>
+            `<tr><td>${name}</td><td>${s.matches || (s.wins + s.losses)}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>`
+          ).join("")}
+        </table>`;
+    }
+
+    function buildTeamStatTable(data, title) {
+      return `<h4>${title}</h4>
+        <table>
+          <tr><th>Team</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
+          ${Object.entries(data).map(([team, s]) =>
+            `<tr><td>${team}</td><td>${s.wins + s.losses}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>`
+          ).join("")}
+        </table>`;
     }
 
     function buildMatchTable(data, isDoubles) {
       return `
-      <table>
-        <tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>
-        ${data.map(d => `
-          <tr>
-            <td>${d.teamA}</td>
-            <td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
-            <td>${d.teamB}</td>
-            <td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
-            <td>${d.win}</td>
-            <td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
-            <td>${d.point}</td>
-          </tr>`).join("")}
-      </table>`;
+        <table>
+          <tr><th>Team A</th><th>Pair A</th><th>Team B</th><th>Pair B</th><th>Winner</th><th>Type</th><th>Points</th></tr>
+          ${data.map(d => `
+            <tr>
+              <td>${d.teamA}</td>
+              <td>${d.a1}${isDoubles ? " & " + d.a2 : ""}</td>
+              <td>${d.teamB}</td>
+              <td>${d.b1}${isDoubles ? " & " + d.b2 : ""}</td>
+              <td>${d.win}</td>
+              <td>${d.isTrump ? "Trump Win" : d.isTrumpLost ? "Trump Loss" : "Normal"}</td>
+              <td>${d.point}</td>
+            </tr>`).join("")}
+        </table>`;
     }
 
     function renderStats() {
       document.getElementById("doublesStats").innerHTML = buildMatchTable(stats.doubles, true);
       document.getElementById("singlesStats").innerHTML = buildMatchTable(stats.singles, false);
-      document.getElementById("teamStatsDoubles").innerHTML = buildStatTable(stats.teamDoubles, "Team Doubles");
-      document.getElementById("teamStatsSingles").innerHTML = buildStatTable(stats.teamSingles, "Team Singles");
-      document.getElementById("playerStatsDoubles").innerHTML = buildStatTable(stats.playerDoubles, "Player Doubles");
-      document.getElementById("playerStatsSingles").innerHTML = buildStatTable(stats.playerSingles, "Player Singles");
+      document.getElementById("teamStatsDoubles").innerHTML = buildTeamStatTable(stats.teamDoubles, "Team Doubles");
+      document.getElementById("teamStatsSingles").innerHTML = buildTeamStatTable(stats.teamSingles, "Team Singles");
+      document.getElementById("playerStatsDoubles").innerHTML = buildPlayerStatTable(stats.playerDoubles, "Player Doubles");
+      document.getElementById("playerStatsSingles").innerHTML = buildPlayerStatTable(stats.playerSingles, "Player Singles");
     }
 
     function loadData() {
