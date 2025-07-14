@@ -100,9 +100,9 @@
     function buildPlayerStatTable(data, title) {
       return `<h4>${title}</h4>
         <table>
-          <tr><th>Player</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
+          <tr><th>Player</th><th>Matches</th><th>Wins</th><th>Points</th></tr>
           ${Object.entries(data).map(([name, s]) =>
-            `<tr><td>${name}</td><td>${s.matches || (s.wins + s.losses)}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>`
+            `<tr><td>${name}</td><td>${s.matches || (s.wins + s.losses)}</td><td>${s.wins}</td><td>${s.points}</td></tr>`
           ).join("")}
         </table>`;
     }
