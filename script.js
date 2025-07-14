@@ -27,9 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
     { name: "RED RHINOS", color: "RED", players: [], captain: "" },
     { name: "ORANGE OCELOTS", color: "ORANGE", players: [], captain: "" },
     { name: "BLACK BULLS", color: "BLACK", players: [], captain: "" },
+    { name: "MAROON MUSTANGS", color: "MAROON", players: [], captain: "" },
     { name: "WHITE WOLVES", color: "BLACK", players: [], captain: "" },
-    { name: "BLUE BERSERKERS", color: "BLUE", players: [], captain: "" },
-    { name: "MAROON MUSTANGS", color: "MAROON", players: [], captain: "" }
+    { name: "BLUE BERSERKERS", color: "BLUE", players: [], captain: "" }
   ];
 
   const stats = {
