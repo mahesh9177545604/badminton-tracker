@@ -106,9 +106,9 @@
     function buildStatTable(data, title) {
       return `<h4>${title}</h4>
       <table>
-        <tr><th>Name</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
+        <tr><th>Name</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
         ${Object.entries(data).map(([name, s]) =>
-          `<tr><td>${name}</td><td>${matches}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>`
+          `<tr><td>${name}</td></td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>`
         ).join("")}
       </table>`;
     }
