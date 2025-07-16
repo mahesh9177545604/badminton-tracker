@@ -97,27 +97,27 @@
       });
     }
 
-    function buildPlayerStatTable(data, title) {
-      const sorted = Object.entries(obj).sort((a, b) => b[1].points - a[1].points);
-      return `<h4>${title}</h4>
-        <table>
-          <tr><th>Player</th><th>Matches</th><th>Wins</th><th>Points</th></tr>
-          ${Object.entries(data).map(([name, s]) =>
-            `<tr><td>${name}</td><td>${s.matches || (s.wins + s.losses)}</td><td>${s.wins}</td><td>${s.points}</td></tr>`
-          ).join("")}
-        </table>`;
-    }
-
     function buildTeamStatTable(data, title) {
-      const sorted = Object.entries(obj).sort((a, b) => b[1].points - a[1].points);
-      return `<h4>${title}</h4>
-        <table>
-          <tr><th>Team</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
-          ${Object.entries(data).map(([team, s]) =>
-            `<tr><td>${team}</td><td>${s.wins + s.losses}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>`
-          ).join("")}
-        </table>`;
-    }
+  const sorted = Object.entries(data).sort((a, b) => b[1].points - a[1].points || b[1].wins - a[1].wins);
+  return `<h4>${title}</h4>
+    <table>
+      <tr><th>Team</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Points</th></tr>
+      ${sorted.map(([team, s]) =>
+        `<tr><td>${team}</td><td>${s.wins + s.losses}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.points}</td></tr>`
+      ).join("")}
+    </table>`;
+}
+
+function buildPlayerStatTable(data, title) {
+  const sorted = Object.entries(data).sort((a, b) => b[1].points - a[1].points || b[1].wins - a[1].wins);
+  return `<h4>${title}</h4>
+    <table>
+      <tr><th>Player</th><th>Matches</th><th>Wins</th><th>Points</th></tr>
+      ${sorted.map(([name, s]) =>
+        `<tr><td>${name}</td><td>${s.matches || (s.wins + s.losses)}</td><td>${s.wins}</td><td>${s.points}</td></tr>`
+      ).join("")}
+    </table>`;
+}
 
     function buildMatchTable(data, isDoubles) {
       return `
